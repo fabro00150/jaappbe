@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+
+<h1>Lista de Usuarios</h1>
+<table id="table_users" class="display table table-striped table-bordered">
+    <thead style="color: #1E1E1E;">
+        <tr>
+            <th>DNI/Cedula</th>
+            <th>Nombres</th>
+            <th>Sector</th>           
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr style="color: #1E1E1E;">
+            <td>{{ usuario.dni_cedula }}</td>
+            <td>{{ usuario.apellido_paterno }} {{ usuario.apellido_materno }} {{ usuario.nombres }}</td>        
+            <td>{{ usuario.sector.nombre }}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'process_pag_usuario' usuario.id %}">Pagar</a>                
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function() {
+        $('#table_users').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+
+{% if messages %}    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+            iziToast.success({
+                title: '{{ message.tags|title }}',
+                message: '{{ message }}',
+                position: 'topRight'
+            });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endblock %}

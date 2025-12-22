@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Lista de Sectores</h1>
+<table id="table_sectors" class="display table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Acciones</th>            
+        </tr>
+    </thead>
+    <tbody>
+        {% for sector in sectores %}
+        <tr>
+            <td>{{ sector.id }}</td>
+            <td>{{ sector.nombre }}</td>
+            <td>{{ sector.descripcion }}</td>
+            <td>{{ sector.estado }}</td>
+            <td>
+                <a href="{% url 'edit_sector' sector.id %}"><i class="ti ti-edit"></i></a>
+            </td>
+            <td>
+                <a href="{% url 'delete_sector' sector.id %}"><i class="ti ti-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if messages %}    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+            iziToast.success({
+                title: '{{ message.tags|title }}',
+                message: '{{ message }}',
+                position: 'topRight'
+            });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endblock %}

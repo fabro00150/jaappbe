@@ -1,0 +1,60 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>TARIFAS</h1>
+<table id="table_tarifas" class="display table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tarifa</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tarifa in tarifas %}
+        <tr>
+            <td>{{ tarifa.id }}</td>
+            <td>{{ tarifa.tarifa }}</td>
+            <td>                
+                {% if tarifa.activa %}
+                    <span class="badge bg-success">Activa</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactiva</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'edit_tarifa' tarifa.id %}"><i class="ti ti-edit"></i></a>
+                <a href="{% url 'delete_tarifa' tarifa.id %}"><i class="ti ti-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'new_tarifa' %}" class="btn btn-primary">Crear tarifa</a>
+
+<script>
+    $(document).ready(function() {
+        $('#table_tarifas').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+{% if messages %}    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+            iziToast.success({
+                title: '{{ message.tags|title }}',
+                message: '{{ message }}',
+                position: 'topRight'
+            });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endblock %}

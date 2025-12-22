@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Pagos de {{ usuario.nombres }} {{ usuario.apellido_paterno }}</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Año</th>
+      <th>Mes</th>
+      <th>Consumo m³</th>
+      <th>Monto</th>
+      <th>Estado</th>
+      <th>Fecha de pago</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in lecturas %}
+    <tr>
+      <td>{{ item.anio }}</td>
+      <td>{{ item.mes }}</td>
+      <td>{{ item.consumo }}</td>
+      <td>{{ item.monto|default:"—" }}</td>
+      <td>
+        {% if item.pagado %}
+          <span class="badge bg-success">Pagado</span>
+        {% else %}
+          <span class="badge bg-danger">Pendiente</span>
+        {% endif %}
+      </td>
+      <td>{{ item.fecha_pago|default:"—" }}</td>
+      <td>
+        {% if not item.pagado %}
+          <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}" class="btn btn-primary btn-sm">Pagar</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if messages %}    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+            iziToast.success({
+                title: '{{ message.tags|title }}',
+                message: '{{ message }}',
+                position: 'topRight'
+            });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endblock %}

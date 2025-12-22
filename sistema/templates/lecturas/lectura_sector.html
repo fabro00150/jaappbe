@@ -1,0 +1,110 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Lectura {{ sector.nombre }}</h1>
+
+<form method="get" id="form_filtros">
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <label for="anio">Año</label>
+      <select id="anio" name="anio" class="form-select"
+              onchange="document.getElementById('form_filtros').submit();">
+        {% for anio in lista_anios %}
+          <option value="{{ anio }}" {% if anio == anio_actual %}selected{% endif %}>{{ anio }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="mes">Mes</label>
+      <select id="mes" name="mes" class="form-select"
+              onchange="document.getElementById('form_filtros').submit();">
+        {% for m, nombre in lista_meses %}
+          <option value="{{ m }}" {% if m == mes_actual %}selected{% endif %}>{{ nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</form>
+
+<form method="post" action="{% url 'save_lectura' sector_id %}" id="form_lecturas">
+  {% csrf_token %}
+  <input type="hidden" name="anio" value="{{ anio_actual }}">
+  <input type="hidden" name="mes" value="{{ mes_actual }}">
+
+  <table class="table table-striped" id="table_lecturas">
+    <thead>
+      <tr>
+        <th>DNI</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Lectura anterior</th>
+        <th>Lectura actual</th>
+        <th>Consumo m³</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in usuarios %}
+      <tr>
+        <td>{{ item.usuario.dni_cedula }}</td>
+        <td>{{ item.usuario.nombres }}</td>
+        <td>{{ item.usuario.apellido_paterno }} {{ item.usuario.apellido_materno }}</td>
+
+        <td>
+          <span class="badge bg-success">
+            {{ item.lectura_anterior|default:"—" }}
+          </span>
+          <input type="hidden" id="lectura_anterior_{{ item.usuario.id }}"
+                value="{{ item.lectura_anterior }}">
+        </td>
+
+        <td>
+          <input type="number" name="lectura_actual_{{ item.usuario.id }}"
+                value="{{ item.lectura_actual }}"
+                class="form-control"
+                oninput="calcularConsumo({{ item.usuario.id }})">
+        </td>
+
+        <td>
+          <span id="consumo_{{ item.usuario.id }}" class="badge bg-info">
+            {{ item.consumo|default:"" }}
+          </span>
+        </td>
+
+        <td>
+          <!-- Mantén acciones que usen sector, no el id del usuario -->
+          <a href="{% url 'lectura_sector' sector_id %}"><i class="ti ti-edit"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <button type="submit" class="btn btn-primary">Guardar Lecturas</button>
+</form>
+
+<button type="submit" class="btn btn-primary" form="form_filtros" disabled style="display:none;"></button>
+
+<script>
+function calcularConsumo(usuarioId) {
+  const anteriorEl = document.getElementById("lectura_anterior_" + usuarioId);
+  const actualEl = document.querySelector("input[name='lectura_actual_" + usuarioId + "']");
+  const consumoEl = document.getElementById("consumo_" + usuarioId);
+
+  let anterior = parseInt(anteriorEl?.value) || 0;
+  let actual = parseInt(actualEl?.value) || 0;
+  let consumo = actual - anterior;
+
+  consumoEl.innerText = consumo >= 0 ? consumo : "";
+}
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('#table_lecturas').DataTable({
+      language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+      pageLength: 10,
+      order: [[0, "desc"]]
+    });
+  });
+</script>
+{% endblock %}

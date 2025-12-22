@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Editar tipo de evento</h1>
+<form method="post" action="{% url 'save_edit_tipo_evento' tipo_evento.id %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" value="{{ tipo_evento.nombre }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Fecha</label>
+        <input type="datetime-local" class="form-control" id="fecha" name="fecha" value="{{ tipo_evento.fecha|date:"Y-m-d\TH:i" }}">
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Lugar</label>
+        <input type="text" class="form-control" id="lugar" name="lugar" value="{{ tipo_evento.lugar }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion">{{ tipo_evento.descripcion }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'list_tipo_evento' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

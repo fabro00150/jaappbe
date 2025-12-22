@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Lista de Tipos de Eventos</h1>
+<table id="table_tipo_eventos" class="display table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Lugar</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+            <th>Registrar</th> <!-- 👈 nueva columna -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo_evento in tipo_eventos %}
+        <tr>
+            <td>{{ tipo_evento.id }}</td>
+            <td>{{ tipo_evento.nombre }}</td>
+            <td>{{ tipo_evento.fecha }}</td>
+            <td>{{ tipo_evento.lugar }}</td>
+            <td>{{ tipo_evento.descripcion }}</td>
+            <td>
+                <a href="{% url 'edit_tipo_evento' tipo_evento.id %}"><i class="ti ti-edit"></i></a>
+                <a href="{% url 'delete_tipo_evento' tipo_evento.id %}"><i class="ti ti-trash"></i></a>
+            </td>
+            <td>
+                <!-- 👇 botón para registrar asistencias al evento -->
+                <a href="{% url 'asistencia_evento' tipo_evento.id %}" class="btn btn-success btn-sm">
+                    Registrar asistencias
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'new_tipo_evento' %}" class="btn btn-primary">Crear evento</a>
+
+<script>
+    $(document).ready(function() {
+        $('#table_tipo_eventos').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+
+{% if messages %}    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+            iziToast.success({
+                title: '{{ message.tags|title }}',
+                message: '{{ message }}',
+                position: 'topRight'
+            });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endblock %}

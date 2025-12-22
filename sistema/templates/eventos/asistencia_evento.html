@@ -1,0 +1,73 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Asistencias del evento {{ evento.nombre }}</h1>
+
+<form method="post" action="{% url 'save_asistencias' evento.id %}">
+  {% csrf_token %}
+
+  <!-- Filtro por estado -->
+  <div class="mb-3">
+    <label for="filtro" class="form-label">Filtrar por asistencia:</label>
+    <select id="filtro" class="form-select" onchange="filtrarTabla()">
+      <option value="todos">Todos</option>
+      <option value="asistio">Asistió</option>
+      <option value="no_asistio">No asistió</option>
+    </select>
+  </div>
+
+  <table class="table table-striped" id="tabla_asistencias">
+    <thead>
+      <tr>
+        <th>DNI</th>
+        <th>Nombre</th>
+        <th>Sector</th>
+        <th>Fecha/Hora</th>
+        <th>Asistió</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asistencia in asistencias %}
+      <tr data-estado="{% if asistencia.asistio %}asistio{% else %}no_asistio{% endif %}">
+        <td>{{ asistencia.usuario.dni_cedula }}</td>
+        <td>{{ asistencia.usuario.nombres }} {{ asistencia.usuario.apellido_paterno }}</td>
+        <td>{{ asistencia.usuario.sector.nombre }}</td>
+        <td>{{ asistencia.fecha_hora|date:"d/m/Y H:i" }}</td>
+        <td>
+          <input type="checkbox" name="asistio_{{ asistencia.id }}"
+                 {% if asistencia.asistio %}checked{% endif %}>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <button type="submit" class="btn btn-primary">Guardar asistencias</button>
+</form>
+<script>
+    $(document).ready(function() {
+        $('#tabla_asistencias').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+<script>
+function filtrarTabla() {
+  const filtro = document.getElementById("filtro").value;
+  const filas = document.querySelectorAll("#tabla_asistencias tbody tr");
+
+  filas.forEach(fila => {
+    if (filtro === "todos") {
+      fila.style.display = "";
+    } else if (fila.dataset.estado === filtro) {
+      fila.style.display = "";
+    } else {
+      fila.style.display = "none";
+    }
+  });
+}
+</script>
+{% endblock %}

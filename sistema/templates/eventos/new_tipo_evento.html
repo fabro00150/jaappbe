@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Crear tipo de evento</h1>
+<form method="post" action="{% url 'save_tipo_evento_new' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label" for="nombre">Nombre</label>
+        <input type="text" class="form-control" id="nombre" name="nombre">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="fecha">Fecha</label>
+        <input type="datetime-local" class="form-control" id="fecha" name="fecha">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="lugar">Lugar</label>
+        <input type="text" class="form-control" id="lugar" name="lugar">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="descripcion">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'list_tipo_eventos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+{% block content %}
+<h1>Editar Sector</h1>
+<form method="post" action="{% url 'save_edit_sector' sector.id %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" value="{{ sector.nombre }}" name="nombre">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion">{{ sector.descripcion }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <select class="form-select" id="estado" name="estado">
+            {% if sector.estado == 1 %}
+                <option value="1" selected>Activo</option>
+                <option value="0">Inactivo</option>
+            {% else %}
+                <option value="1">Activo</option>
+                <option value="0" selected>Inactivo</option>
+            {% endif %}
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-secondary" href="{% url 'list_sectors' %}">Cancelar</a>
+</form>
+{% endblock %}

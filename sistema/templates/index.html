@@ -1,0 +1,458 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JAAP Buena Esperanza</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/favicon.png' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />  
+  <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- LIBREIAS DATATABLES -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <!-- LIBREIAS IZITOAST -->
+  <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="dynamic" data-header-position="dynamic">    
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="{% url 'index' %}" class="text-nowrap logo-img">            
+            <span class="card-title">JAAP Buena Esperanza</span>
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-6"></i>
+          </div>
+        </div>
+        
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+          
+          <ul id="sidebarnav">
+            <li class="nav-small-cap">
+              <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+              <span class="hide-menu">Inicio</span>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="#" aria-expanded="false">
+                <i class="ti ti-atom"></i>
+                <span class="hide-menu">Dashboard</span>
+              </a>
+            </li>
+            <!-- ---------------------------------- -->
+            <!-- Dashboard -->
+            <!-- ---------------------------------- -->
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="{% url 'list_sec_lec' %}" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-aperture"></i>
+                  </span>
+                  <span class="hide-menu">Lecturas</span>
+                </div>                
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="{% url 'list_pag_usuarios' %}" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-shopping-cart"></i>
+                  </span>
+                  <span class="hide-menu">Pagos</span>
+                </div>                
+              </a>
+            </li>            
+            <li>
+              <span class="sidebar-divider lg"></span>
+            </li>
+            <li class="nav-small-cap">
+              <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+              <span class="hide-menu">Apps</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-basket"></i>
+                  </span>
+                  <span class="hide-menu">Usuarios</span>
+                </div>                
+              </a>
+              <ul aria-expanded="false" class="collapse first-level">
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'new_user' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Nuevo</span>
+                    </div>                    
+                  </a>
+                </li>                
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'list_users' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Listado</span>
+                    </div>                    
+                  </a>
+                </li>                
+              </ul>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-chart-donut-3"></i>
+                  </span>
+                  <span class="hide-menu">Sectores</span>
+                </div>                
+              </a>
+              <ul aria-expanded="false" class="collapse first-level">
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'new_sector' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Nuevo</span>
+                    </div>                    
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'list_sectors' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Listado</span>
+                    </div>                    
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="{% url 'list_tipo_eventos' %}"
+                aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-user-circle"></i>
+                  </span>
+                  <span class="hide-menu">Tipos de Eventos</span>
+                </div>                
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="{% url 'list_tarifas' %}" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-mail"></i>
+                  </span>
+                  <span class="hide-menu">Tarifas</span>
+                </div>                
+              </a>
+            </li>                        
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="#" aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-brand-google-photos"></i>
+                  </span>
+                  <span class="hide-menu">Gallery</span>
+                </div>                
+              </a>
+            </li>            
+            <li class="sidebar-item">
+              <a class="sidebar-link justify-content-between"  
+                href="#"
+                aria-expanded="false">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="d-flex">
+                    <i class="ti ti-user-circle"></i>
+                  </span>
+                  <span class="hide-menu">Account Setting</span>
+                </div>                
+              </a>
+            </li>  
+            {% else %}
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'login' %}" aria-expanded="false">
+                <i class="ti ti-login"></i>
+                <span class="hide-menu">Login</span>
+              </a>
+            </li>            
+            {% endif %}
+
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+    
+      <!--  Header Start Parte superior, cuenta con el menu lateral -->
+      <header class="app-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+          <ul class="navbar-nav">
+            <li class="nav-item d-block d-xl-none">
+              <a class="nav-link sidebartoggler " id="headerCollapse" href="javascript:void(0)">
+                <i class="ti ti-menu-2"></i>
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link " href="javascript:void(0)" id="drop1" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="ti ti-bell"></i>
+                <div class="notification bg-primary rounded-circle"></div>
+              </a>
+              <div class="dropdown-menu dropdown-menu-animate-up" aria-labelledby="drop1">
+                <div class="message-body">
+                  <a href="javascript:void(0)" class="dropdown-item">
+                    Item 1
+                  </a>
+                  <a href="javascript:void(0)" class="dropdown-item">
+                    Item 2
+                  </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="navbar-collapse justify-content-end px-0" id="navbarNav" data-bs-toggle="collapse">
+            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+               
+              <li class="nav-item dropdown">
+                <a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img src="{% static 'assets/images/profile/user-1.jpg' %}" alt="" width="35" height="35" class="rounded-circle">
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                  <div class="message-body">
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-user fs-6"></i>
+                      {% if user.is_authenticated %}
+                      <p class="mb-0 fs-3">{{ user.username }}</p>
+                      {% else %}
+                      <p class="mb-0 fs-3"></p>
+                      {% endif %}
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-mail fs-6"></i>
+                      {% if user.is_authenticated %}
+                      <p class="mb-0 fs-3">{{ user.email }}</p>
+                      {% else %}
+                      <p class="mb-0 fs-3"></p>
+                      {% endif %}
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-list-check fs-6"></i>
+                      <p class="mb-0 fs-3">My Task</p>
+                    </a>
+                    {% if request.user.is_authenticated %}
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</button>
+                    </form>                                                     
+                    {% else %}
+                    <form action="{% url 'login' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary mx-3 mt-2 d-block">Login</button>
+                    </form>                    
+                    {% endif %}
+                  </div>
+                </div>
+              </li>              
+            </ul>
+          </div>
+          
+        </nav>
+        
+      </header>
+
+      <!--  Header End Parte superior, cuenta con el menu lateral-->
+        
+      <div class="body-wrapper-inner">
+        <div class="container-fluid">
+          <!--  Row 1 -->
+          <div class="row">
+            {% block content %}
+            <!-- CARD 1: Consumo vs Recaudación -->
+            <div class="col-lg-8">
+              <div class="card w-100">
+                <div class="card-body">
+                  <div class="d-md-flex align-items-center">
+                    <div>
+                      <h4 class="card-title">Consumo y recaudación mensual</h4>
+                      <p class="card-subtitle">
+                        Consumo (m³) vs monto recaudado
+                      </p>
+                    </div>
+                    <div class="ms-auto">
+                      <ul class="list-unstyled mb-0">
+                        <li class="list-inline-item text-primary">
+                          <span class="round-8 text-bg-primary rounded-circle me-1 d-inline-block"></span>
+                          Consumo (m³)
+                        </li>
+                        <li class="list-inline-item text-info">
+                          <span class="round-8 text-bg-info rounded-circle me-1 d-inline-block"></span>
+                          Recaudado ($)
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div id="sales-overview" class="mt-4 mx-n6"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 2: KPIs rápidos -->
+            <div class="col-lg-4">
+              <div class="card overflow-hidden">
+                <div class="card-body pb-0">
+                  <div class="d-flex align-items-start">
+                    <div>
+                      <h4 class="card-title">Resumen general</h4>
+                      <p class="card-subtitle">Usuarios y pagos</p>
+                    </div>
+                  </div>
+
+                  <!-- Total usuarios -->
+                  <div class="mt-4 pb-3 d-flex align-items-center">
+                    <span class="btn btn-primary rounded-circle round-48 hstack justify-content-center">
+                      <i class="ti ti-users fs-6"></i>
+                    </span>
+                    <div class="ms-3">
+                      <h5 class="mb-0 fw-bolder fs-4">Usuarios registrados</h5>
+                      <span class="text-muted fs-3">{{ usuarios_total }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Pagos pendientes -->                  
+
+                  <!-- Top consumidor (si existe) -->
+                  {% if top_consumidores %}
+                  {% with tc=top_consumidores.0 %}
+                  <div class="py-3 d-flex align-items-center">
+                    <span class="btn btn-success rounded-circle round-48 hstack justify-content-center">
+                      <i class="ti ti-flame fs-6"></i>
+                    </span>
+                    <div class="ms-3">
+                      <h5 class="mb-0 fw-bolder fs-4">Mayor consumo</h5>
+                      <span class="text-muted fs-3">
+                        {{ tc.usuario__apellido_paterno }} {{ tc.usuario__nombres }} ({{ tc.total }} m³)
+                      </span>
+                    </div>
+                  </div>
+                  {% endwith %}
+                  {% endif %}                  
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: Tabla por sector -->
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-md-flex align-items-center">
+                    <div>
+                      <h4 class="card-title">Consumo y recaudación por sector</h4>
+                      <p class="card-subtitle">
+                        Sectores ordenados por consumo y monto recaudado
+                      </p>
+                    </div>
+                  </div>
+                  <div class="table-responsive mt-4">
+                    <table class="table mb-0 text-nowrap varient-table align-middle fs-3">
+                      <thead>
+                        <tr>
+                          <th class="px-0 text-muted">Sector</th>
+                          <th class="px-0 text-muted text-end">Consumo total (m³)</th>
+                          <th class="px-0 text-muted text-end">Recaudado ($)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sectore in sectores %}                        
+                        <tr>
+                          <td class="px-0">
+                            <div class="d-flex align-items-center">
+                              <div class="ms-3">
+                                <h6 class="mb-0 fw-bolder">{{ sectore.nombre }}</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="px-0 text-dark fw-medium text-end">
+                            {% for consumo in consumo_sector %}
+                              {% if sectore.nombre == consumo.usuario__sector__nombre %}
+                                {{ consumo.total }}
+                              {% endif %}
+                            {% endfor %}
+                          </td>
+                          <td class="px-0 text-dark fw-medium text-end">
+                            {% for recaudos_sec in recaudos_sector %}
+                              {% if sectore.nombre == recaudos_sec.usuario__sector__nombre %}
+                                {{ recaudos_sec.total }}
+                              {% endif %}
+                            {% endfor %}
+                          </td>
+                        </tr>                       
+                        {% empty %}
+                        <tr>
+                          <td colspan="3" class="text-center text-muted">Sin datos de sectores.</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script>
+              window.dashboardData = {{ chart_data_json|safe }};
+            </script>
+            <script src="{% static 'assets/js/dashboard.js' %}"></script>  
+            {% endblock %}
+          </div>
+          <div class="py-6 px-6 text-center">
+            <p class="mb-0 fs-4">Design by <a href="#"
+                class="pe-1 text-primary text-decoration-underline">Jaap</a></p>
+          </div>          
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/sidebarmenu.js' %}"></script>
+  <script src="{% static 'assets/js/app.min.js' %}"></script>
+  <script src="{% static 'assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+  <script src="{% static 'assets/libs/simplebar/dist/simplebar.js' %}"></script>
+  
+
+
+</body>
+
+</html>
