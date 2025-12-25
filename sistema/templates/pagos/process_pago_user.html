@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
 <h1>Pagos de {{ usuario.nombres }} {{ usuario.apellido_paterno }}</h1>
-
+<!-- TABLA ORIGINAL CON BOTÓN PAGAR -->
 <table class="table table-striped">
   <thead>
     <tr>
@@ -31,25 +31,161 @@
       <td>{{ item.fecha_pago|default:"—" }}</td>
       <td>
         {% if not item.pagado %}
-          <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}" class="btn btn-primary btn-sm">Pagar</a>
+          <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}"
+             class="btn btn-primary btn-sm">
+             Pagar
+          </a>
         {% endif %}
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+<div class="mb-3 no-print">
+  <button type="button" class="btn btn-secondary" onclick="window.print()">
+    Imprimir recibo
+  </button>
+</div>
 
-{% if messages %}    
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            {% for message in messages %}
-            iziToast.success({
-                title: '{{ message.tags|title }}',
-                message: '{{ message }}',
-                position: 'topRight'
-            });
-            {% endfor %}
-        });
-    </script>
+<!-- CONTENEDOR SOLO PARA IMPRESIÓN (MEDIA A4) -->
+<div id="recibo" class="receipt-page">
+  <div class="receipt-header">
+    <h3>RECIBO DE AGUA</h3>
+    <p><strong>Usuario:</strong> {{ usuario.nombres }} {{ usuario.apellido_paterno }}</p>
+    <p><strong>Sector:</strong> {{ sector.nombre }}</p>
+    <p><strong>Fecha emisión:</strong> {{ now|date:"d/m/Y" }}</p>
+  </div>
+
+  <div class="receipt-body">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Mes</th>
+          <th>Consumo m³</th>
+          <th>Monto</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in lecturas %}
+        <tr>
+          <td>{{ item.mes }}/{{ item.anio }}</td>
+          <td>{{ item.consumo }}</td>
+          <td>{{ item.monto|default:"—" }}</td>
+          <td>{% if item.pagado %}Pagado{% else %}Pendiente{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="chart-container">
+      <canvas id="consumoChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
+
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    {% for message in messages %}
+    iziToast.success({
+      title: '{{ message.tags|title }}',
+      message: '{{ message }}',
+      position: 'topRight'
+    });
+    {% endfor %}
+  });
+</script>
 {% endif %}
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = {{ labels|safe }};
+  const data = {{ consumos|safe }};
+
+  const ctx = document.getElementById('consumoChart').getContext('2d');
+  const consumoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Consumo m³',
+        data: data,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Consumo mensual (m³)'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+<style>
+  .receipt-page {
+    width: 210mm;      /* ancho A4 */
+    height: 135mm;     /* media A4 vertical */
+    padding: 10mm;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    font-size: 11px;
+    background: #fff;
+  }
+
+  .chart-container {
+    width: 100%;
+    height: 60mm;
+  }
+
+  /* elementos que no deben salir en impresión */
+  .no-print {
+    /* visible en pantalla, oculto solo en print */
+  }
+
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 5mm;
+    }
+
+    /* Ocultar todo lo que no sea el recibo */
+    body * {
+      visibility: hidden;
+    }
+
+    #recibo, #recibo * {
+      visibility: visible;
+    }
+
+    #recibo {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+  }
+</style>
 {% endblock %}

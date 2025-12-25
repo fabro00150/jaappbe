@@ -407,10 +407,11 @@ def process_pag_usuario(request, id):
     usuario = get_object_or_404(SistemaUsuario, id=id)
     sector = get_object_or_404(SistemaSector, id=usuario.sector_id)
 
-    # todas las lecturas del usuario ordenadas por año/mes
-    lecturas = SistemaLectura.objects.filter(usuario=usuario).order_by('-anio', '-mes')
+    lecturas = SistemaLectura.objects.filter(usuario=usuario).order_by('anio', 'mes')
 
     datos = []
+    labels = []
+    consumos = []
     for lectura in lecturas:
         pago = SistemaPago.objects.filter(lectura=lectura, usuario=usuario).first()
         datos.append({
@@ -421,12 +422,17 @@ def process_pag_usuario(request, id):
             "monto": pago.monto if pago else None,
             "fecha_pago": pago.fecha_pago if pago else None,
         })
+        labels.append(f"{lectura.mes:02d}-{lectura.anio}")
+        consumos.append(lectura.consumo)
 
     return render(request, "pagos/process_pago_user.html", {
         "usuario": usuario,
         "sector": sector,
         "lecturas": datos,
+        "labels": labels,
+        "consumos": consumos,
     })
+
 @login_required
 def registrar_pago(request, usuario_id, anio, mes):
     usuario = get_object_or_404(SistemaUsuario, id=usuario_id)
@@ -486,7 +492,7 @@ def asistencia_evento(request, evento_id):
             SistemaAsistencia.objects.create(
                 evento=evento,
                 usuario=usuario,
-                fecha_hora=evento.fecha,  # o date.today()
+                fecha_hora=evento.fecha, 
                 asistio=False
             )
 
@@ -510,7 +516,6 @@ def save_asistencias(request, evento_id):
 
 
 
-# tu_app/views.py
 from rest_framework import viewsets
 import json
 from .models import (
