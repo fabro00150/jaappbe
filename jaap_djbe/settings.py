@@ -1,5 +1,6 @@
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 import os
 
 
@@ -31,6 +32,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "sistema",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt"
+    
     
 ]
 
@@ -128,7 +132,25 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Agregar al final:
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': None,    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # o si prefieres objetos:
+        # JWTAuthentication,
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        # o:
+        # IsAuthenticated,
+    ),
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

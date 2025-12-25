@@ -7,8 +7,11 @@ from .serializers import SistemaUsuarioSerializer
 from django.utils.dateparse import parse_datetime
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
 
 
 from rest_framework import viewsets
@@ -122,9 +125,7 @@ class SistemaMedidorViewSet(viewsets.ModelViewSet):
 class SistemaLecturaViewSet(viewsets.ModelViewSet):
     queryset = SistemaLectura.objects.all()
     serializer_class = SistemaLecturaSerializer
-    # ❌ Quitar esta línea:
-    # parser_classes = [MultiPartParser, FormParser]
-
+    
     @action(
         detail=False,
         methods=['post'],
@@ -215,12 +216,13 @@ def login_view(request):
         )
 
     user = authenticate(username=username, password=password)
-
     if user is None or not user.is_active:
         return Response(
             {'detail': 'Credenciales inválidas'},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    token, _ = Token.objects.get_or_create(user=user)
 
     return Response(
         {
@@ -229,6 +231,19 @@ def login_view(request):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
+            'token': token.key,
         },
         status=status.HTTP_200_OK,
     )
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me_view(request):
+    user = request.user
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+    })

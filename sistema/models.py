@@ -150,7 +150,9 @@ class SistemaEvento(models.Model):
         db_table = 'sistema_evento'
 
 
-def lectura_foto_upload_to(instance, filename):
+from .storage import OverwriteStorage
+
+def lectura_foto_upload_to(instance, filename):    
     return f'lecturas/{instance.usuario_id}/{instance.anio}{instance.mes:02d}/{filename}'
 
 class SistemaLectura(models.Model):
@@ -161,7 +163,7 @@ class SistemaLectura(models.Model):
     anio = models.IntegerField()
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    foto = models.ImageField(upload_to=lectura_foto_upload_to, null=True, blank=True,)
+    foto = models.ImageField(upload_to=lectura_foto_upload_to, storage=OverwriteStorage(), null=True, blank=True,)
 
     class Meta:
         managed = False
