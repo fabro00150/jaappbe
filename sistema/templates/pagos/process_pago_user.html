@@ -30,12 +30,16 @@
         {% endif %}
       </td>
       <td>{{ item.fecha_pago|default:"—" }}</td>
-      <td>
+      <<td>
+        {% if item.foto_url %}
+          <a href="{{ item.foto_url }}" target="_blank" class="btn btn-outline-secondary btn-sm" title="Ver foto">
+            <i class="ti ti-eye"></i>  {# o cualquier icono de ojo que uses #}
+          </a>
+        {% endif %}
+
         {% if not item.pagado %}
           <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}"
-            class="btn btn-primary btn-sm btn-pagar"
-            data-anio="{{ item.anio }}"
-            data-mes="{{ item.mes }}">
+            class="btn btn-primary btn-sm">
             Pagar
           </a>
         {% endif %}

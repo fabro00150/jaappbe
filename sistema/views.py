@@ -411,8 +411,7 @@ def process_pag_usuario(request, id):
     sector = get_object_or_404(SistemaSector, id=usuario.sector_id)
 
     tarifa_activa = SistemaTarifa.objects.filter(activa=True).first()
-    tarifa_valor = tarifa_activa.tarifa if tarifa_activa else Decimal("0.00")
-
+    tarifa_valor = tarifa_activa.tarifa if tarifa_activa else Decimal("0.00")    
     lecturas_qs = SistemaLectura.objects.filter(usuario=usuario).order_by('anio', 'mes')
 
     datos = []
@@ -444,6 +443,7 @@ def process_pag_usuario(request, id):
             "pagado": pagado,
             "monto": monto,
             "fecha_pago": fecha_pago,
+            "foto_url": lectura.foto.url if lectura.foto else None,
         }
         datos.append(item)
 
