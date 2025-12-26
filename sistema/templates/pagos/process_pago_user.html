@@ -1,7 +1,8 @@
 {% extends 'index.html' %}
+{% load static %}
+{% load tz %}
 {% block content %}
 <h1>Pagos de {{ usuario.nombres }} {{ usuario.apellido_paterno }}</h1>
-<!-- TABLA ORIGINAL CON BOTÓN PAGAR -->
 <table class="table table-striped">
   <thead>
     <tr>
@@ -20,7 +21,7 @@
       <td>{{ item.anio }}</td>
       <td>{{ item.mes }}</td>
       <td>{{ item.consumo }}</td>
-      <td>{{ item.monto|default:"—" }}</td>
+      <td>{{ item.monto|floatformat:2 }}</td>
       <td>
         {% if item.pagado %}
           <span class="badge bg-success">Pagado</span>
@@ -32,8 +33,10 @@
       <td>
         {% if not item.pagado %}
           <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}"
-             class="btn btn-primary btn-sm">
-             Pagar
+            class="btn btn-primary btn-sm btn-pagar"
+            data-anio="{{ item.anio }}"
+            data-mes="{{ item.mes }}">
+            Pagar
           </a>
         {% endif %}
       </td>
@@ -48,38 +51,61 @@
 </div>
 
 <!-- CONTENEDOR SOLO PARA IMPRESIÓN (MEDIA A4) -->
+{% load qr_code %}
 <div id="recibo" class="receipt-page">
+
   <div class="receipt-header">
-    <h3>RECIBO DE AGUA</h3>
-    <p><strong>Usuario:</strong> {{ usuario.nombres }} {{ usuario.apellido_paterno }}</p>
-    <p><strong>Sector:</strong> {{ sector.nombre }}</p>
-    <p><strong>Fecha emisión:</strong> {{ now|date:"d/m/Y" }}</p>
+    <div class="header-left">
+      <img src="{% static 'images/logo.png' %}" alt="Logo JAAP" class="logo-recibo">
+      <p><strong>Tarifa vigente:</strong> {{ tarifa }} por m³</p>
+    </div>
+
+    <div class="header-center">
+      <h3>RECIBO DE COBRO</h3>
+      <p><strong>Usuario:</strong> {{ usuario.nombres }} {{ usuario.apellido_paterno }}</p>
+      <p><strong>Sector:</strong> {{ sector.nombre }}</p>
+      <p><strong>Fecha emisión:</strong> {% now "d/m/Y" %}</p>
+      <p><strong>Cédula/DNI:</strong> {{ usuario.dni_cedula }}</p>
+      
+    </div>
+
+    <div class="header-right">
+      {% qr_from_text usuario.dni_cedula size="S" image_format="png" %}
+    </div>
   </div>
 
   <div class="receipt-body">
-    <table class="table table-sm">
-      <thead>
-        <tr>
-          <th>Mes</th>
-          <th>Consumo m³</th>
-          <th>Monto</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in lecturas %}
-        <tr>
-          <td>{{ item.mes }}/{{ item.anio }}</td>
-          <td>{{ item.consumo }}</td>
-          <td>{{ item.monto|default:"—" }}</td>
-          <td>{% if item.pagado %}Pagado{% else %}Pendiente{% endif %}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="receipt-layout">
+      <div class="receipt-table-wrapper">
+        <table class="table table-sm table-recibo">
+          <thead>
+            <tr>
+              <th>Mes</th>
+              <th>Consumo m³</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if lectura_recibo %}
+            <tr>
+              <td>{{ lectura_recibo.mes }}/{{ lectura_recibo.anio }}</td>
+              <td>{{ lectura_recibo.consumo }}</td>
+              <td>{{ lectura_recibo.monto|floatformat:2 }}</td>
+              <td>{% if lectura_recibo.pagado %}Pagado{% else %}Pendiente{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4">No hay lecturas para mostrar.</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
 
-    <div class="chart-container">
-      <canvas id="consumoChart"></canvas>
+      <div class="chart-container">
+        <canvas id="consumoChart"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -136,10 +162,34 @@
     }
   });
 </script>
-<style>
+<script>
+  // Confirmar antes de ir a registrar_pago
+  document.querySelectorAll('.btn-pagar').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = this.getAttribute('href');
+      const anio = this.getAttribute('data-anio');
+      const mes = this.getAttribute('data-mes');
+
+      if (confirm(`¿Confirmar pago de ${mes}/${anio} e imprimir recibo?`)) {
+        // añadimos un flag para que al volver se auto-imprima
+        window.location.href = url + '?print=1';
+      }
+    });
+  });
+
+  // Si la vista indica auto_print y hay lectura_recibo, imprimir al cargar
+  {% if auto_print and lectura_recibo %}
+  window.addEventListener('load', function() {
+    window.print();
+  });
+  {% endif %}
+</script>
+
+<style>  
   .receipt-page {
-    width: 210mm;      /* ancho A4 */
-    height: 135mm;     /* media A4 vertical */
+    width: 210mm;
+    height: 135mm;
     padding: 10mm;
     border: 1px solid #000;
     box-sizing: border-box;
@@ -147,16 +197,66 @@
     background: #fff;
   }
 
+  /* HEADER: logo - info - QR */
+  .receipt-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 5mm;
+  }
+
+  .header-left,
+  .header-center,
+  .header-right {
+    flex: 1 1 auto;
+  }
+
+  .header-center {
+    text-align: center;
+  }
+
+  .logo-recibo {
+    width: 300px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* el QR no suele necesitar mucho estilo extra */
+  .header-right img {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* CUERPO: tabla + gráfico */
+  .receipt-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 40mm); /* resto del alto después del header; ajusta si hace falta */
+  }
+
+  .receipt-table-wrapper {
+    flex: 1 1 auto;
+    max-height: 65mm;      /* límite de alto para la tabla */
+    overflow-y: auto;
+  }
+
+  .table-recibo th,
+  .table-recibo td {
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+
   .chart-container {
-    width: 100%;
-    height: 60mm;
+    flex: 0 0 50mm;        /* altura reservada para el gráfico */
   }
 
-  /* elementos que no deben salir en impresión */
-  .no-print {
-    /* visible en pantalla, oculto solo en print */
+  .chart-container canvas {
+    width: 35% !important;
+    height: auto !important;
   }
 
+  /* PRINT: igual que ya tenías */
   @media print {
     body {
       margin: 0;
@@ -168,7 +268,6 @@
       margin: 5mm;
     }
 
-    /* Ocultar todo lo que no sea el recibo */
     body * {
       visibility: hidden;
     }
@@ -187,5 +286,6 @@
       display: none !important;
     }
   }
+
 </style>
 {% endblock %}

@@ -24,4 +24,5 @@ urlpatterns = [
     path("", include("sistema.urls")),
     path("api/", include("sistema.api_urls")),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("qr_code/", include("qr_code.urls", namespace="qr_code")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

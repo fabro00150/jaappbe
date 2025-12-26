@@ -6,6 +6,9 @@ from django.contrib.auth import login, logout as auth_login, logout
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
+from decimal import Decimal
+from datetime import date
+from django.urls import reverse
 # Create your views here.
 
 @login_required
@@ -283,15 +286,14 @@ def save_lectura(request, id):
                     mes=mes,
                     defaults={"consumo": valor}
                 )
-
-                # 👇 Crear pago pendiente si la lectura es nueva
+                
                 if created:
                     SistemaPago.objects.create(
                         lectura=lectura,
                         usuario=usuario,
-                        monto=0,          # se calculará al pagar
-                        fecha_pago=date.today(),  # aún no pagado
-                        estado=False      # pendiente
+                        monto=Decimal("0.00"),  # valor placeholder, se recalcula al pagar
+                        fecha_pago=None,
+                        estado=False
                     )
 
         messages.success(request, f"Lecturas de {sector.nombre} guardadas correctamente")
@@ -402,74 +404,140 @@ def list_pag_usuarios(request):
     usuarios = SistemaUsuario.objects.all()
     sectores = SistemaSector.objects.all()
     return render(request, 'pagos/list_pag_usuarios.html', {'usuarios': usuarios, 'sectores': sectores})
+
 @login_required
 def process_pag_usuario(request, id):
     usuario = get_object_or_404(SistemaUsuario, id=id)
     sector = get_object_or_404(SistemaSector, id=usuario.sector_id)
 
-    lecturas = SistemaLectura.objects.filter(usuario=usuario).order_by('anio', 'mes')
+    tarifa_activa = SistemaTarifa.objects.filter(activa=True).first()
+    tarifa_valor = tarifa_activa.tarifa if tarifa_activa else Decimal("0.00")
+
+    lecturas_qs = SistemaLectura.objects.filter(usuario=usuario).order_by('anio', 'mes')
 
     datos = []
     labels = []
     consumos = []
-    for lectura in lecturas:
+    lectura_anterior = None
+
+    for lectura in lecturas_qs:
         pago = SistemaPago.objects.filter(lectura=lectura, usuario=usuario).first()
-        datos.append({
+
+        if lectura_anterior is not None:
+            consumo_periodo = max((lectura.consumo or 0) - (lectura_anterior.consumo or 0), 0)
+        else:
+            consumo_periodo = lectura.consumo or 0
+
+        if pago and pago.estado:
+            monto = pago.monto
+            pagado = True
+            fecha_pago = pago.fecha_pago
+        else:
+            monto = Decimal(consumo_periodo) * tarifa_valor
+            pagado = False
+            fecha_pago = None
+
+        item = {
             "anio": lectura.anio,
             "mes": lectura.mes,
-            "consumo": lectura.consumo,
-            "pagado": True if pago and pago.estado else False,
-            "monto": pago.monto if pago else None,
-            "fecha_pago": pago.fecha_pago if pago else None,
-        })
+            "consumo": consumo_periodo,
+            "pagado": pagado,
+            "monto": monto,
+            "fecha_pago": fecha_pago,
+        }
+        datos.append(item)
+
+        # gráfico: TODOS los meses
         labels.append(f"{lectura.mes:02d}-{lectura.anio}")
-        consumos.append(lectura.consumo)
+        consumos.append(consumo_periodo)
+
+        lectura_anterior = lectura
+
+    # ===== MES QUE VA EN EL RECIBO (un solo pago) =====
+    anio_recibo = request.GET.get("anio")
+    mes_recibo = request.GET.get("mes")
+    lectura_recibo = None
+    auto_print = request.GET.get("auto_print") == "1"
+    if anio_recibo and mes_recibo:
+        anio_recibo = int(anio_recibo)
+        mes_recibo = int(mes_recibo)
+        for item in datos:
+            if item["anio"] == anio_recibo and item["mes"] == mes_recibo:
+                lectura_recibo = item
+                break
+
+    # si no vino anio/mes, puedes usar último pendiente o último mes
+    if not lectura_recibo and datos:
+        for item in reversed(datos):
+            if not item["pagado"]:
+                lectura_recibo = item
+                break
+        if not lectura_recibo:
+            lectura_recibo = datos[-1]
 
     return render(request, "pagos/process_pago_user.html", {
         "usuario": usuario,
         "sector": sector,
-        "lecturas": datos,
-        "labels": labels,
+        "lecturas": datos,          
+        "lectura_recibo": lectura_recibo,  
+        "labels": labels,           
         "consumos": consumos,
+        "tarifa": tarifa_valor,
+        "auto_print": auto_print,
+        
     })
 
+    
+    
 @login_required
 def registrar_pago(request, usuario_id, anio, mes):
     usuario = get_object_or_404(SistemaUsuario, id=usuario_id)
 
-    # buscar la lectura del mes/año
     lectura = SistemaLectura.objects.filter(usuario=usuario, anio=anio, mes=mes).first()
     if not lectura:
         messages.error(request, f"No existe lectura para {mes}/{anio}")
         return redirect("process_pag_usuario", id=usuario.id)
 
-    # verificar si ya existe pago
     pago_existente = SistemaPago.objects.filter(lectura=lectura, usuario=usuario).first()
     if pago_existente and pago_existente.estado:
         messages.warning(request, f"La lectura de {mes}/{anio} ya está pagada")
         return redirect("process_pag_usuario", id=usuario.id)
 
-    # calcular monto con tarifa activa
     tarifa_activa = SistemaTarifa.objects.filter(activa=True).first()
     if not tarifa_activa:
         messages.error(request, "No existe tarifa activa para calcular el pago")
         return redirect("process_pag_usuario", id=usuario.id)
 
-    monto = lectura.consumo * tarifa_activa.tarifa if lectura.consumo else 0
+    # === calcular consumo del periodo (lectura actual - anterior) ===
+    if mes == 1:
+        anio_anterior, mes_anterior = anio - 1, 12
+    else:
+        anio_anterior, mes_anterior = anio, mes - 1
 
-    # crear o actualizar pago
+    lectura_anterior = SistemaLectura.objects.filter(
+        usuario=usuario, anio=anio_anterior, mes=mes_anterior
+    ).first()
+
+    if lectura_anterior:
+        consumo_periodo = max((lectura.consumo or 0) - (lectura_anterior.consumo or 0), 0)
+    else:
+        consumo_periodo = lectura.consumo or 0  # primera lectura
+
+    monto = consumo_periodo * tarifa_activa.tarifa
+
     pago, created = SistemaPago.objects.update_or_create(
         lectura=lectura,
         usuario=usuario,
         defaults={
             "monto": monto,
-            "fecha_pago": date.today(),  # fecha real del pago
+            "fecha_pago": date.today(),
             "estado": True
         }
     )
 
     messages.success(request, f"Pago registrado para {mes}/{anio}, monto: {monto:.2f}")
-    return redirect("process_pag_usuario", id=usuario.id)
+    url = reverse("process_pag_usuario", kwargs={"id": usuario.id})
+    return redirect(f"{url}?anio={anio}&mes={mes}&auto_print=1")
 
 # Login y Logout
 def login(request):
