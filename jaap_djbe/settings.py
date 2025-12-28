@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["www.jaappbe.net", "jaappbe.net", "localhost:8005"]
+ALLOWED_HOSTS = ["www.jaappbe.org", "jaappbe.org", "localhost:8005"]
 # ALLOWED_HOSTS = ["*"]
 
 
@@ -136,8 +136,7 @@ LOGOUT_REDIRECT_URL = 'login'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # o si prefieres objetos:
-        # JWTAuthentication,
+                
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
