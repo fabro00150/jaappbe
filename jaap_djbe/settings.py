@@ -3,26 +3,29 @@ from dotenv import load_dotenv
 from datetime import timedelta
 import os
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["www.jaappbe.org", "jaappbe.org", "localhost:8005"]
-# ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://jaappbe.org",
+    "http://jaappbe.org",
+    "https://www.jaappbe.org",
+    "38.242.141.194",
+]
 
+ALLOWED_HOSTS = [
+	"www.jaappbe.org",
+	"jaappbe.org",
+	"localhost",
+	"127.0.0.1",
+]
 
-# Application definition
+#ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -69,10 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "jaap_djbe.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -83,9 +82,6 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,10 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = "es"
 
 TIME_ZONE = "UTC"
@@ -114,34 +106,22 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# variables de redireccion de login y logout
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'  
 
-
-# Agregar al final:
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
                 
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        # o:
-        # IsAuthenticated,
+        'rest_framework.permissions.IsAuthenticated',        
     ),
 }
 SIMPLE_JWT = {
@@ -158,5 +138,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
-# Asegurarse de que el directorio media exista
+
 os.makedirs(MEDIA_ROOT, exist_ok=True)
