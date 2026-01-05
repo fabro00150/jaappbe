@@ -174,6 +174,7 @@ class SistemaMedidor(models.Model):
     id = models.BigAutoField(primary_key=True)
     numero_serie = models.CharField(unique=True, max_length=50)
     coordenadas = models.CharField(max_length=100)
+    observaciones = models.TextField(blank=True, null=True)
     fecha_instalacion = models.DateField()
     usuario = models.ForeignKey('SistemaUsuario', models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True)

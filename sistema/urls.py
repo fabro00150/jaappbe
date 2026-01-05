@@ -1,7 +1,15 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('index', views.index, name='index'),
+    path('', views.index, name='index'),
+
+    # Medidores
+    path('medidores/', views.list_medidores, name='list_medidores'),
+    path('medidores/nuevo/', views.new_medidor, name='new_medidor'),
+    path('medidores/guardar/', views.save_new_medidor, name='save_new_medidor'),
+    path('medidores/<int:id>/editar/', views.edit_medidor, name='edit_medidor'),
+    path('medidores/<int:id>/guardar/', views.save_edit_medidor, name='save_edit_medidor'),
+    path('medidores/<int:id>/eliminar/', views.delete_medidor, name='delete_medidor'),
 
     # Usuarios
     path('list_users', views.list_users, name='list_users'),    
@@ -36,28 +44,21 @@ urlpatterns = [
     path('list_tarifas', views.list_tarifas, name='list_tarifas'),
     path('new_tarifa', views.new_tarifa, name='new_tarifa'),
     path('save_new_tarifa', views.save_new_tarifa, name='save_new_tarifa'),
-    path('edit_tarifa/<int:id>', views.edit_tarifa, name='edit_tarifa'),
-    path('save_edit_tarifa/<int:id>', views.save_edit_tarifa, name='save_edit_tarifa'),
+    path('edit_tarifa/<int:id>', views.edit_tarifa, name='edit_tarifa'),    
     path('delete_tarifa/<int:id>', views.delete_tarifa, name='delete_tarifa'),
 
     # Pagos
     path('list_pag_usuarios', views.list_pag_usuarios, name='list_pag_usuarios'),
     path('process_pag_usuario/<int:id>', views.process_pag_usuario, name='process_pag_usuario'),
     path('registrar_pago/<int:usuario_id>/<int:anio>/<int:mes>', views.registrar_pago, name='registrar_pago'),
+    path('anular/<int:pago_id>/', views.anular_pago, name='anular_pago'),
     
     # Asistencias
     path('evento/<int:evento_id>/asistencias/', views.asistencia_evento, name='asistencia_evento'),
     path('evento/<int:evento_id>/asistencias/save/', views.save_asistencias, name='save_asistencias'),
-    
-    
-    
-
+            
     # Login
-    path('', views.login, name='login'),
-    path('logout', views.exit, name='exit'),
-    
-    # Dashboard        
-    
-    
+    path('login', views.login, name='login'),
+    path('logout', views.exit, name='exit'),              
     
 ]

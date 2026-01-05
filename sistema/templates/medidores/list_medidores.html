@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+{% block content %}
+<h1>Medidores</h1>
+
+<a href="{% url 'new_medidor' %}" class="btn btn-primary mb-3">Nuevo medidor</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Número serie</th>
+      <th>Usuario</th>
+      <th>Coordenadas</th>
+      <th>Fecha instalación</th>
+      <th>Observaciones</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in medidores %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ m.numero_serie }}</td>
+      <td>{{ m.usuario.nombres }} {{ m.usuario.apellido_paterno }}</td>
+      <td>{{ m.coordenadas }}</td>
+      <td>{{ m.fecha_instalacion }}</td>
+      <td>{{ m.observaciones|default:"-" }}</td>
+      <td>
+        <a href="{% url 'edit_medidor' m.id %}" class="btn btn-sm btn-warning">Editar</a>
+        <a href="{% url 'delete_medidor' m.id %}" class="btn btn-sm btn-danger"
+           onclick="return confirm('¿Eliminar medidor?');">Eliminar</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">No hay medidores registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

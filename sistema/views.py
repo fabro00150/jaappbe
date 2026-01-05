@@ -37,6 +37,87 @@ def index(request):
                                             
                                           })
 
+# =============Medidores============
+@login_required
+def list_medidores(request):
+    medidores = SistemaMedidor.objects.select_related('usuario').all()
+    return render(request, 'medidores/list_medidores.html', {
+        'medidores': medidores
+    })
+
+
+@login_required
+def new_medidor(request):
+    usuarios = SistemaUsuario.objects.all()
+    return render(request, 'medidores/new_medidor.html', {
+        'usuarios': usuarios
+    })
+
+
+@login_required
+def save_new_medidor(request):
+    if request.method == 'POST':
+        try:
+            usuario = SistemaUsuario.objects.get(id=request.POST['usuario_id'])
+
+            medidor = SistemaMedidor()
+            medidor.numero_serie = request.POST['numero_serie']
+            medidor.coordenadas = request.POST['coordenadas']  # "lat,lng"
+            medidor.observaciones = request.POST.get('observaciones', '')
+            medidor.fecha_instalacion = request.POST['fecha_instalacion']
+            medidor.usuario = usuario
+            medidor.save()
+
+            messages.success(request, 'Medidor creado correctamente')
+        except Exception as e:
+            messages.error(request, f'Error al crear medidor: {e}')
+
+    return redirect('list_medidores')
+
+
+@login_required
+def edit_medidor(request, id):
+    medidor = get_object_or_404(SistemaMedidor, id=id)
+    usuarios = SistemaUsuario.objects.all()
+    return render(request, 'medidores/edit_medidor.html', {
+        'medidor': medidor,
+        'usuarios': usuarios
+    })
+
+
+@login_required
+def save_edit_medidor(request, id):
+    medidor = get_object_or_404(SistemaMedidor, id=id)
+
+    if request.method == 'POST':
+        try:
+            usuario = SistemaUsuario.objects.get(id=request.POST['usuario_id'])
+
+            medidor.numero_serie = request.POST['numero_serie']
+            medidor.coordenadas = request.POST['coordenadas']
+            medidor.observaciones = request.POST.get('observaciones', '')
+            medidor.fecha_instalacion = request.POST['fecha_instalacion']
+            medidor.usuario = usuario
+            medidor.save()
+
+            messages.success(request, 'Medidor actualizado correctamente')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar medidor: {e}')
+
+    return redirect('list_medidores')
+
+
+@login_required
+def delete_medidor(request, id):
+    try:
+        medidor = SistemaMedidor.objects.get(id=id)
+        medidor.delete()
+        messages.success(request, 'Medidor eliminado correctamente')
+    except Exception as e:
+        messages.error(request, f'Error al eliminar medidor: {e}')
+
+    return redirect('list_medidores')
+
 # =============Usuarios============
 @login_required
 def list_users(request):    
@@ -302,40 +383,42 @@ def save_lectura(request, id):
     messages.error(request, "Método inválido")
     return render(request, 'lecturas/list_sec_lec.html', {'sectores': SistemaSector.objects.all()})
 
-
-#=====TARIFAS====
 @login_required
 def list_tarifas(request):
     tarifas = SistemaTarifa.objects.all()
     return render(request, 'tarifas/list_tarifas.html', {'tarifas': tarifas})
+
+
 @login_required
 def new_tarifa(request):
     return render(request, 'tarifas/new_tarifa.html')
+
+
 @login_required
 def save_new_tarifa(request):
     if request.method == "POST":
         try:
             valor = request.POST.get("tarifa")
-            activa = request.POST.get("activa") == "on"  # checkbox en el formulario
+            activa = request.POST.get("activa") == "on"
 
-            # Si se marca como activa, desactivar las demás
             if activa:
                 SistemaTarifa.objects.update(activa=False)
 
-            starifa = SistemaTarifa(
+            SistemaTarifa.objects.create(
                 tarifa=valor,
                 activa=activa
             )
-            starifa.save()
 
             messages.success(request, "Tarifa guardada correctamente")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
+            return redirect("list_tarifas")
 
         except Exception as e:
             messages.error(request, f"Error al guardar la tarifa: {e}")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
+            return redirect("list_tarifas")
 
     return redirect("list_tarifas")
+
+
 @login_required
 def edit_tarifa(request, id):
     tarifa = get_object_or_404(SistemaTarifa, id=id)
@@ -345,7 +428,6 @@ def edit_tarifa(request, id):
             valor = request.POST.get("tarifa")
             activa = request.POST.get("activa") == "on"
 
-            # Si se marca como activa, desactivar las demás
             if activa:
                 SistemaTarifa.objects.exclude(id=tarifa.id).update(activa=False)
 
@@ -354,49 +436,26 @@ def edit_tarifa(request, id):
             tarifa.save()
 
             messages.success(request, "Tarifa actualizada correctamente")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
+            return redirect("list_tarifas")
 
         except Exception as e:
             messages.error(request, f"Error al actualizar la tarifa: {e}")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
+            return redirect("list_tarifas")
 
+    # GET: mostrar formulario con datos de esa tarifa
     return render(request, "tarifas/edit_tarifa.html", {"tarifa": tarifa})
 
-@login_required
-def save_edit_tarifa(request, id):
-    if request.method == "POST":
-        try:
-            id = request.POST.get("id")
-            valor = request.POST.get("tarifa")
-            activa = request.POST.get("activa") == "on"  # checkbox en el formulario
 
-            # Si se marca como activa, desactivar las demás
-            if activa:
-                SistemaTarifa.objects.update(activa=False)
-
-            SistemaTarifa.objects.filter(id=id).update(
-                tarifa=valor,
-                activa=activa
-            )
-
-            messages.success(request, "Tarifa editada correctamente")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
-
-        except Exception as e:
-            messages.error(request, f"Error al editar la tarifa: {e}")
-            return render(request, "tarifas/list_tarifas.html", {"tarifas": SistemaTarifa.objects.all()})
-
-    return redirect("list_tarifas")
 @login_required
 def delete_tarifa(request, id):
     try:
         tarifa = SistemaTarifa.objects.get(id=id)
         tarifa.delete()
         messages.success(request, 'Tarifa eliminada correctamente')
-        return render(request, 'tarifas/list_tarifas.html', {'tarifas': SistemaTarifa.objects.all()})
-    except Exception as e:
+    except Exception:
         messages.error(request, 'Error al eliminar la tarifa')
-        return render(request, 'tarifas/list_tarifas.html', {'tarifas': SistemaTarifa.objects.all()})
+
+    return redirect('list_tarifas')
 
 #======== PAGOS ==================
 @login_required
@@ -408,8 +467,7 @@ def list_pag_usuarios(request):
 @login_required
 def process_pag_usuario(request, id):
     usuario = get_object_or_404(SistemaUsuario, id=id)
-    sector = get_object_or_404(SistemaSector, id=usuario.sector_id)
-
+    sector = get_object_or_404(SistemaSector, id=usuario.sector_id)    
     tarifa_activa = SistemaTarifa.objects.filter(activa=True).first()
     tarifa_valor = tarifa_activa.tarifa if tarifa_activa else Decimal("0.00")    
     lecturas_qs = SistemaLectura.objects.filter(usuario=usuario).order_by('anio', 'mes')
@@ -444,16 +502,15 @@ def process_pag_usuario(request, id):
             "monto": monto,
             "fecha_pago": fecha_pago,
             "foto_url": lectura.foto.url if lectura.foto else None,
+            "pago_id": pago.id if pago else None,
         }
         datos.append(item)
-
-        # gráfico: TODOS los meses
+        
         labels.append(f"{lectura.mes:02d}-{lectura.anio}")
         consumos.append(consumo_periodo)
 
         lectura_anterior = lectura
-
-    # ===== MES QUE VA EN EL RECIBO (un solo pago) =====
+            
     anio_recibo = request.GET.get("anio")
     mes_recibo = request.GET.get("mes")
     lectura_recibo = None
@@ -465,8 +522,7 @@ def process_pag_usuario(request, id):
             if item["anio"] == anio_recibo and item["mes"] == mes_recibo:
                 lectura_recibo = item
                 break
-
-    # si no vino anio/mes, puedes usar último pendiente o último mes
+    
     if not lectura_recibo and datos:
         for item in reversed(datos):
             if not item["pagado"]:
@@ -483,7 +539,7 @@ def process_pag_usuario(request, id):
         "labels": labels,           
         "consumos": consumos,
         "tarifa": tarifa_valor,
-        "auto_print": auto_print,
+        "auto_print": auto_print,        
         
     })
 
@@ -507,8 +563,7 @@ def registrar_pago(request, usuario_id, anio, mes):
     if not tarifa_activa:
         messages.error(request, "No existe tarifa activa para calcular el pago")
         return redirect("process_pag_usuario", id=usuario.id)
-
-    # === calcular consumo del periodo (lectura actual - anterior) ===
+    
     if mes == 1:
         anio_anterior, mes_anterior = anio - 1, 12
     else:
@@ -521,7 +576,7 @@ def registrar_pago(request, usuario_id, anio, mes):
     if lectura_anterior:
         consumo_periodo = max((lectura.consumo or 0) - (lectura_anterior.consumo or 0), 0)
     else:
-        consumo_periodo = lectura.consumo or 0  # primera lectura
+        consumo_periodo = lectura.consumo or 0 
 
     monto = consumo_periodo * tarifa_activa.tarifa
 
@@ -539,7 +594,18 @@ def registrar_pago(request, usuario_id, anio, mes):
     url = reverse("process_pag_usuario", kwargs={"id": usuario.id})
     return redirect(f"{url}?anio={anio}&mes={mes}&auto_print=1")
 
-# Login y Logout
+@login_required
+def anular_pago(request, pago_id):
+    pago = get_object_or_404(SistemaPago, id=pago_id)
+    usuario_id = pago.usuario.id    
+    pago.estado = False    
+    pago.save()
+
+    messages.success(request, "Pago marcado como pendiente nuevamente.")
+    return redirect("process_pag_usuario", id=usuario_id)
+
+
+# =============Login y Logout=============
 def login(request):
     return render(request, "registration/login.html")
 

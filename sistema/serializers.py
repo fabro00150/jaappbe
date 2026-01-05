@@ -42,7 +42,7 @@ class SistemaMedidorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SistemaMedidor
-        fields = ['id', 'numero_serie', 'coordenadas', 'fecha_instalacion', 
+        fields = ['id', 'numero_serie', 'coordenadas', 'fecha_instalacion', 'observaciones',
                   'usuario', 'usuario_nombre', 'created_at', 'updated_at']
 
 class SistemaLecturaSerializer(serializers.ModelSerializer):

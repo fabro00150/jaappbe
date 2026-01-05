@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<h1>Editar medidor</h1>
+
+<form method="post" action="{% url 'save_edit_medidor' medidor.id %}">
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label>Número de serie</label>
+    <input type="text" name="numero_serie" class="form-control" required value="{{ medidor.numero_serie }}">
+  </div>
+
+  <div class="mb-3">
+    <label>Usuario</label>
+    <select name="usuario_id" id="id_usuario" class="form-control js-user-select" required>
+        {% for u in usuarios %}
+        <option value="{{ u.id }}"
+                {% if u.id == medidor.usuario.id %}selected{% endif %}>
+            {{ u.nombres }} {{ u.apellido_paterno }} {{ u.apellido_materno }} - {{ u.dni_cedula }}
+        </option>
+        {% endfor %}
+    </select>
+  </div>
+
+
+  <div class="mb-3">
+    <label>Fecha de instalación</label>
+    <input type="date" name="fecha_instalacion" class="form-control" required value="{{ medidor.fecha_instalacion | date:'Y-m-d' }}">        
+    </input>
+        
+  </div>
+
+  <div class="mb-3">
+    <label>Coordenadas (lat,lng)</label>
+    <input type="text" name="coordenadas" id="id_coordenadas" class="form-control" readonly value="{{ medidor.coordenadas }}">
+  </div>
+
+
+  <div class="mb-3">
+    <label>Observaciones</label>
+    <textarea name="observaciones" class="form-control" rows="3">{{ medidor.observaciones }}</textarea>
+  </div>
+
+  <h4>Ubicación en mapa</h4>
+  <div id="map" style="height: 400px;"></div>
+
+  <button type="submit" class="btn btn-success mt-3">Guardar</button>
+</form>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+<script>
+  var defaultLat = -0.029719;
+  var defaultLng = -78.173241;
+  var zoomLevel = 16;
+
+  var coordInput = document.getElementById("id_coordenadas");
+  var initialLat = defaultLat;
+  var initialLng = defaultLng;
+
+  if (coordInput.value) {
+    var parts = coordInput.value.split(",");
+    if (parts.length === 2) {
+      var lat = parseFloat(parts[0]);
+      var lng = parseFloat(parts[1]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        initialLat = lat;
+        initialLng = lng;
+      }
+    }
+  }
+
+  var map = L.map('map').setView([initialLat, initialLng], zoomLevel);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var marker = L.marker([initialLat, initialLng], {draggable: true}).addTo(map);
+
+  function updateInput(lat, lng) {
+    coordInput.value = lat.toFixed(6) + "," + lng.toFixed(6);
+  }
+
+  // solo actualiza si no había valor previo
+  if (!coordInput.value) {
+    updateInput(initialLat, initialLng);
+  }
+
+  map.on('click', function(e) {
+    marker.setLatLng(e.latlng);
+    updateInput(e.latlng.lat, e.latlng.lng);
+  });
+
+  marker.on('dragend', function(e) {
+    var latlng = e.target.getLatLng();
+    updateInput(latlng.lat, latlng.lng);
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('.js-user-select').select2({
+      width: '100%',
+      placeholder: 'Buscar usuario',
+      allowClear: true
+    });
+  });
+</script>
+
+
+{% endblock %}

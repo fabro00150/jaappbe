@@ -121,6 +121,24 @@ class SistemaTarifaViewSet(viewsets.ModelViewSet):
 class SistemaMedidorViewSet(viewsets.ModelViewSet):
     queryset = SistemaMedidor.objects.all()
     serializer_class = SistemaMedidorSerializer
+    
+    @action(detail=False, methods=['post'])
+    def sync(self, request):
+        """Endpoint para sincronizar medidores desde Flutter"""
+        updated_after = request.data.get('updated_after')
+
+        if updated_after:
+            queryset = self.get_queryset().filter(
+                updated_at__gte=parse_datetime(updated_after)
+            )
+        else:
+            queryset = self.get_queryset()
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'timestamp': timezone.now().isoformat(),
+            'data': serializer.data,
+        })
 
 class SistemaLecturaViewSet(viewsets.ModelViewSet):
     queryset = SistemaLectura.objects.all()

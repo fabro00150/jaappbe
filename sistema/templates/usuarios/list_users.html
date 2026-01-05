@@ -37,13 +37,31 @@
 <script>
     $(document).ready(function() {
         $('#table_users').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
             },
-            "pageLength": 10,
-            "order": [[0, "desc"]]
+            pageLength: 10,
+            order: [[0, "desc"]],
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Usuarios'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Usuarios',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                title: 'Usuarios'
+            }
+            ]
         });
-    });
+        });
+
 </script>
 
 {% if messages %}    
