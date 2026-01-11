@@ -73,7 +73,7 @@
             <!-- ---------------------------------- -->
             <li class="sidebar-item">
               <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_sec_lec' %}" aria-expanded="false">
+                href="{% url 'list_meses_lec' %}" aria-expanded="false">
                 <div class="d-flex align-items-center gap-3">
                   <span class="d-flex">
                     <i class="ti ti-aperture"></i>
@@ -134,6 +134,7 @@
                 </li>                
               </ul>
             </li>
+
             <li class="sidebar-item">
               <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
                 <div class="d-flex align-items-center gap-3">
@@ -201,19 +202,44 @@
                   <span class="hide-menu">Medidores</span>
                 </div>                
               </a>
-            </li>            
+            </li>          
+            
+            <!-- REPORTES -->
+            
             <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="#"
-                aria-expanded="false">
+              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
                 <div class="d-flex align-items-center gap-3">
                   <span class="d-flex">
-                    <i class="ti ti-user-circle"></i>
+                    <i class="ti ti-chart-donut-3"></i>
                   </span>
-                  <span class="hide-menu">Account Setting</span>
+                  <span class="hide-menu">Reportes</span>
                 </div>                
               </a>
-            </li>  
+              <ul aria-expanded="false" class="collapse first-level">
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'reporte_pagos' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Reporte Pagos</span>
+                    </div>                    
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link justify-content-between"  
+                    href="{% url 'reporte_lecturas' %}">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="round-16 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-circle"></i>
+                      </div>
+                      <span class="hide-menu">Reporte Lecturas</span>
+                    </div>                    
+                  </a>
+                </li>
+              </ul>
+            </li>
             {% else %}
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'login' %}" aria-expanded="false">

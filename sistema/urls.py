@@ -35,10 +35,10 @@ urlpatterns = [
     path('save_tipo_evento_new', views.save_tipo_evento_new, name='save_tipo_evento_new'),
     path('delete_tipo_evento/<int:id>', views.delete_tipo_evento, name='delete_tipo_evento'),
 
-    # Lecturas
-    path('list_sec_lec', views.list_sec_lec, name='list_sec_lec'),
-    path('lectura_sector/<int:id>', views.lectura_sector, name='lectura_sector'),
-    path('save_lectura/<int:id>', views.save_lectura, name='save_lectura'),
+    # Lecturas    
+    path("lecturas/", views.lecturas_globales, name="lecturas_globales"),
+    path("lecturas/guardar/", views.save_lecturas_globales, name="save_lecturas_globales"),
+    path('lecturas/meses/', views.list_meses_lecturas, name='list_meses_lec'),
     
     # Tarifas
     path('list_tarifas', views.list_tarifas, name='list_tarifas'),
@@ -50,12 +50,16 @@ urlpatterns = [
     # Pagos
     path('list_pag_usuarios', views.list_pag_usuarios, name='list_pag_usuarios'),
     path('process_pag_usuario/<int:id>', views.process_pag_usuario, name='process_pag_usuario'),
-    path('registrar_pago/<int:usuario_id>/<int:anio>/<int:mes>', views.registrar_pago, name='registrar_pago'),
+    path("pagos/registrar/<int:usuario_id>/<int:anio>/<int:mes>/<int:medidor_id>/",views.registrar_pago,name="registrar_pago",),
     path('anular/<int:pago_id>/', views.anular_pago, name='anular_pago'),
     
     # Asistencias
     path('evento/<int:evento_id>/asistencias/', views.asistencia_evento, name='asistencia_evento'),
     path('evento/<int:evento_id>/asistencias/save/', views.save_asistencias, name='save_asistencias'),
+    
+    # Reportes
+    path("reportes/pagos/", views.reporte_pagos, name="reporte_pagos"),
+    path("reportes/lecturas/", views.reporte_lecturas, name="reporte_lecturas"),
             
     # Login
     path('login', views.login, name='login'),

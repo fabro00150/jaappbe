@@ -161,6 +161,13 @@ class SistemaLectura(models.Model):
     mes = models.IntegerField()
     usuario = models.ForeignKey('SistemaUsuario', models.DO_NOTHING)
     anio = models.IntegerField()
+    medidor = models.ForeignKey(
+        'SistemaMedidor',
+        db_column='medidor_id',
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+    )
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     foto = models.ImageField(upload_to=lectura_foto_upload_to, storage=OverwriteStorage(), null=True, blank=True,)

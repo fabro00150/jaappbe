@@ -3,9 +3,28 @@
 {% load tz %}
 {% block content %}
 <h1>Pagos de {{ usuario.nombres }} {{ usuario.apellido_paterno }}</h1>
+
+<form method="get" class="row g-3 mb-3 no-print">
+  <div class="col-md-4">
+    <label class="form-label">Medidor</label>
+    <select name="medidor_id" class="form-select">
+      <option value="">Todos</option>
+      {% for med in medidores %}
+        <option value="{{ med.id }}"
+                {% if medidor_id|default:'' == med.id|stringformat:"s" %}selected{% endif %}>
+          {{ med.numero_serie }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2 align-self-end">
+    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+  </div>
+</form>
 <table class="table table-striped">
   <thead>
     <tr>
+      <th>Medidor</th>
       <th>Año</th>
       <th>Mes</th>
       <th>Consumo m³</th>
@@ -18,6 +37,13 @@
   <tbody>
     {% for item in lecturas %}
     <tr>
+      <td>
+        {% if item.medidor %}
+          {{ item.medidor.numero_serie }}
+        {% else %}
+          —
+        {% endif %}
+      </td>
       <td>{{ item.anio }}</td>
       <td>{{ item.mes }}</td>    
       <td>{{ item.consumo }}</td>
@@ -47,7 +73,7 @@
         {% endif %}
 
         {% if not item.pagado %}
-          <a href="{% url 'registrar_pago' usuario.id item.anio item.mes %}"
+          <a href="{% url 'registrar_pago' usuario.id item.anio item.mes item.medidor_id %}"
             class="btn btn-primary btn-sm">
             Pagar
           </a>
@@ -79,6 +105,23 @@
       <p><strong>Sector:</strong> {{ sector.nombre }}</p>
       <p><strong>Fecha emisión:</strong> {% now "d/m/Y" %}</p>
       <p><strong>Cédula/DNI:</strong> {{ usuario.dni_cedula }}</p>
+      <p><strong>Medidor:</strong>
+      {% if lectura_recibo and lectura_recibo.medidor %}
+        {{ lectura_recibo.medidor.numero_serie }}
+      {% else %}
+        {% if medidor_id %}
+          {# si se filtró por medidor pero no hay lectura_recibo #}
+          {% for med in medidores %}
+            {% if med.id|stringformat:"s" == medidor_id %}
+              {{ med.numero_serie }}
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          —
+        {% endif %}
+      {% endif %}
+    </p>
+
       
     </div>
 
@@ -171,32 +214,18 @@
         y: {
           beginAtZero: true
         }
+      },
+      animation: {
+        onComplete: function () {
+          {% if auto_print and lectura_recibo %}
+          setTimeout(function () {
+            window.print();
+          }, 200);
+          {% endif %}
+        }
       }
     }
   });
-</script>
-<script>
-  // Confirmar antes de ir a registrar_pago
-  document.querySelectorAll('.btn-pagar').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const url = this.getAttribute('href');
-      const anio = this.getAttribute('data-anio');
-      const mes = this.getAttribute('data-mes');
-
-      if (confirm(`¿Confirmar pago de ${mes}/${anio} e imprimir recibo?`)) {
-        // añadimos un flag para que al volver se auto-imprima
-        window.location.href = url + '?print=1';
-      }
-    });
-  });
-
-  // Si la vista indica auto_print y hay lectura_recibo, imprimir al cargar
-  {% if auto_print and lectura_recibo %}
-  window.addEventListener('load', function() {
-    window.print();
-  });
-  {% endif %}
 </script>
 
 <style>  

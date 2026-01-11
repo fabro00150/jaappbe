@@ -1,38 +1,41 @@
 {% extends 'index.html' %}
 {% block content %}
-<h1>Ingreso lectura de Sectores</h1>
-<table id="table_sectors" class="display table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>                        
-            <th>Acciones</th>            
-        </tr>
-    </thead>
-    <tbody>
-        {% for sector in sectores %}
-        <tr>
-            <td>{{ sector.id }}</td>
-            <td>{{ sector.nombre }}</td>                        
-            <td>
-                <a href="{% url 'lectura_sector' sector.id %}"><i class="ti ti-edit"></i></a>
-            </td>            
-        </tr>
-        {% endfor %}
-    </tbody>
+<h1>Actualización de lecturas</h1>
+
+<table id="table_meses" class="display table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Año</th>
+      <th>Mes</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in meses %}
+    <tr>
+      <td>{{ item.anio }}</td>
+      <td>{{ item.mes }}</td>
+      <td>
+        <a href="{% url 'lecturas_globales' %}?anio={{ item.anio }}&mes={{ item.mes }}">
+          <i class="ti ti-edit"></i>
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
-{% if messages %}    
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            {% for message in messages %}
-            iziToast.success({
-                title: '{{ message.tags|title }}',
-                message: '{{ message }}',
-                position: 'topRight'
-            });
-            {% endfor %}
-        });
-    </script>
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    {% for message in messages %}
+    iziToast.success({
+      title: '{{ message.tags|title }}',
+      message: '{{ message }}',
+      position: 'topRight'
+    });
+    {% endfor %}
+  });
+</script>
 {% endif %}
 {% endblock %}

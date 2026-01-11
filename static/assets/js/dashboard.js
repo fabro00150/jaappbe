@@ -1,5 +1,6 @@
 $(function () {
-  const payload = window.chartData;
+  const payload = window.dashboardData;
+  if (!payload) return;
 
   var options_sales_overview = {
     series: payload.series,

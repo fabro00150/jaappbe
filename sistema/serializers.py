@@ -47,12 +47,20 @@ class SistemaMedidorSerializer(serializers.ModelSerializer):
 
 class SistemaLecturaSerializer(serializers.ModelSerializer):
     usuario_nombre = serializers.CharField(source='usuario.nombres', read_only=True)
-    
+    esta_pagada = serializers.SerializerMethodField()
     class Meta:
         model = SistemaLectura
-        fields = ['id', 'consumo', 'mes', 'anio', 'usuario', 'usuario_nombre', 
-                  'created_at', 'updated_at', 'foto']
+        fields = ['id', 'consumo', 'mes', 'anio', 'usuario', 'usuario_nombre', 'medidor',
+                  'created_at', 'updated_at', 'foto', 'esta_pagada']
 
+    def validate(self, attrs):
+        instance = self.instance  # lectura que se está editando
+        if instance and instance.sistemapago_set.filter(estado=True).exists():
+            raise serializers.ValidationError('No se puede modificar una lectura ya pagada.')
+        return attrs
+    def get_esta_pagada(self, obj):
+        return obj.sistemapago_set.filter(estado=True).exists()
+    
 class SistemaPagoSerializer(serializers.ModelSerializer):
     lectura_consumo = serializers.IntegerField(source='lectura.consumo', read_only=True)
     usuario_nombre = serializers.CharField(source='usuario.nombres', read_only=True)
