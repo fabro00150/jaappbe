@@ -39,6 +39,7 @@
 <table id="table_reporte_lecturas" class="display table table-striped table-bordered">
   <thead>
     <tr>
+      <th> Medidor</th>
       <th>Año</th>
       <th>Mes</th>
       <th>DNI/Cédula</th>
@@ -50,6 +51,12 @@
   <tbody>
     {% for lec in lecturas %}
     <tr>
+      <td>
+        {% if lec.medidor %}
+          {{ lec.medidor.numero_serie }}
+        {% else %}
+          —
+        {% endif %}
       <td>{{ lec.anio }}</td>
       <td>{{ lec.mes }}</td>
       <td>{{ lec.usuario.dni_cedula }}</td>

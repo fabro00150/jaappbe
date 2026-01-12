@@ -37,6 +37,7 @@
         <th>Sector</th>
         <th>DNI/Cedula</th>
         <th>Usuario</th>
+        <th>Medidor</th>
         <th>Lectura anterior</th>
         <th>Lectura actual</th>
         <th>Consumo</th>
@@ -49,6 +50,13 @@
         <td>{{ item.usuario.sector.nombre }}</td>
         <td>{{ item.usuario.dni_cedula }}</td>
         <td>{{ item.usuario.apellido_paterno }} {{ item.usuario.apellido_materno }} {{ item.usuario.nombres }}</td>
+        <td>
+          {% if item.medidor %}
+            {{ item.medidor.numero_serie }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
         <td>
           <input type="number"
                 class="form-control"
@@ -63,7 +71,7 @@
             <small class="text-muted">Mes pagado, no editable</small>
           {% else %}
             <input type="number"
-                  name="lectura_actual_{{ item.usuario.id }}"
+                  name="lectura_actual_{{ item.medidor.id }}"
                   value="{{ item.lectura_actual }}"
                   class="form-control lectura-actual"
                   data-anterior="{{ item.lectura_anterior }}">

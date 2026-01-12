@@ -366,14 +366,19 @@ def lecturas_globales(request):
         (9, "Septiembre"), (10, "Octubre"), (11, "Noviembre"), (12, "Diciembre"),
     ]
 
-    usuarios = SistemaUsuario.objects.all().order_by(
-        'sector__nombre', 'apellido_paterno', 'apellido_materno', 'nombres'
+    # todos los medidores con su usuario y sector
+    medidores = (
+        SistemaMedidor.objects
+        .select_related("usuario", "usuario__sector")
+        .order_by("usuario__sector__nombre", "usuario__apellido_paterno", "usuario__apellido_materno", "usuario__nombres", "numero_serie")
     )
 
     datos = []
-    for usuario in usuarios:
+    for med in medidores:
+        usuario = med.usuario
+
         lectura_actual = SistemaLectura.objects.filter(
-            usuario=usuario, anio=anio_actual, mes=mes_actual
+            usuario=usuario, medidor=med, anio=anio_actual, mes=mes_actual
         ).first()
 
         # mes anterior
@@ -383,7 +388,7 @@ def lecturas_globales(request):
             anio_anterior, mes_anterior = anio_actual, mes_actual - 1
 
         lectura_anterior = SistemaLectura.objects.filter(
-            usuario=usuario, anio=anio_anterior, mes=mes_anterior
+            usuario=usuario, medidor=med, anio=anio_anterior, mes=mes_anterior
         ).first()
 
         consumo = None
@@ -400,6 +405,7 @@ def lecturas_globales(request):
 
         datos.append({
             "usuario": usuario,
+            "medidor": med,
             "lectura_actual": lectura_actual.consumo if lectura_actual else "",
             "lectura_anterior": lectura_anterior.consumo if lectura_anterior else "",
             "consumo": consumo if consumo is not None else "",
@@ -411,8 +417,8 @@ def lecturas_globales(request):
         "mes_actual": mes_actual,
         "lista_anios": lista_anios,
         "lista_meses": lista_meses,
-        "usuarios": datos,
-    })  
+        "usuarios": datos,  # ahora cada item es usuario+medidor
+    })
     
 @login_required
 def save_lecturas_globales(request):
@@ -423,11 +429,12 @@ def save_lecturas_globales(request):
     anio = int(request.POST.get("anio"))
     mes = int(request.POST.get("mes"))
 
-    usuarios = SistemaUsuario.objects.all()
+    medidores = SistemaMedidor.objects.select_related("usuario").all()
     errores = []
 
-    for usuario in usuarios:
-        campo = f"lectura_actual_{usuario.id}"
+    for med in medidores:
+        usuario = med.usuario
+        campo = f"lectura_actual_{med.id}"
         valor_str = request.POST.get(campo)
 
         if not valor_str:
@@ -436,32 +443,33 @@ def save_lecturas_globales(request):
         try:
             valor = int(valor_str)
         except ValueError:
-            errores.append(f"Lectura inválida para {usuario.dni_cedula}.")
+            errores.append(f"Lectura inválida para {usuario.dni_cedula} (medidor {med.numero_serie}).")
             continue
 
-        # mes anterior
         if mes == 1:
             anio_ant, mes_ant = anio - 1, 12
         else:
             anio_ant, mes_ant = anio, mes - 1
 
         lectura_anterior = SistemaLectura.objects.filter(
-            usuario=usuario, anio=anio_ant, mes=mes_ant
+            usuario=usuario, medidor=med, anio=anio_ant, mes=mes_ant
         ).first()
         anterior_val = lectura_anterior.consumo if lectura_anterior else 0
 
         if valor < anterior_val:
             errores.append(
-                f"Lectura actual ({valor}) menor que la lectura anterior ({anterior_val}) para {usuario.dni_cedula}."
+                f"Lectura actual ({valor}) menor que la lectura anterior ({anterior_val}) "
+                f"para {usuario.dni_cedula} (medidor {med.numero_serie})."
             )
             continue
 
         lectura, created = SistemaLectura.objects.update_or_create(
             usuario=usuario,
+            medidor=med,
             anio=anio,
             mes=mes,
             defaults={"consumo": valor}
-        )  # [web:332]
+        )
 
         if created:
             SistemaPago.objects.create(
@@ -476,7 +484,7 @@ def save_lecturas_globales(request):
         for e in errores:
             messages.error(request, e)
     else:
-        messages.success(request, "Lecturas de todos los usuarios guardadas correctamente")
+        messages.success(request, "Lecturas de todos los medidores guardadas correctamente")
 
     return redirect("list_meses_lec")
 
