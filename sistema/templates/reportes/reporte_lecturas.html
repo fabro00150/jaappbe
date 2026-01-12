@@ -1,0 +1,93 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Reporte de Lecturas</h1>
+
+<form method="get" action="{% url 'reporte_lecturas' %}" class="row g-3 mb-3">
+  <div class="col-md-2">
+    <label class="form-label">Año</label>
+    <select name="anio" class="form-select">
+      {% for a in lista_anios %}
+        <option value="{{ a }}" {% if a == anio %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Mes</label>
+    <select name="mes" class="form-select">
+      <option value="">Todos</option>
+      {% for m_val, m_nom in lista_meses %}
+        <option value="{{ m_val }}" {% if m_val == mes %}selected{% endif %}>{{ m_nom }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Sector</label>
+    <select name="sector" class="form-select">
+      <option value="">Todos</option>
+      {% for s in sectores %}
+        <option value="{{ s.id }}" {% if s.id|stringformat:"s" == sector_id %}selected{% endif %}>{{ s.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2 align-self-end">
+    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+  </div>
+</form>
+
+<table id="table_reporte_lecturas" class="display table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Año</th>
+      <th>Mes</th>
+      <th>DNI/Cédula</th>
+      <th>Usuario</th>
+      <th>Sector</th>
+      <th>Lectura</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for lec in lecturas %}
+    <tr>
+      <td>{{ lec.anio }}</td>
+      <td>{{ lec.mes }}</td>
+      <td>{{ lec.usuario.dni_cedula }}</td>
+      <td>{{ lec.usuario.apellido_paterno }} {{ lec.usuario.apellido_materno }} {{ lec.usuario.nombres }}</td>
+      <td>{{ lec.usuario.sector.nombre }}</td>
+      <td>{{ lec.consumo }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  $(document).ready(function() {
+    $('#table_reporte_lecturas').DataTable({
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      pageLength: 25,
+      order: [[0, "desc"], [1, "desc"]],
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'excelHtml5',
+          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+        },
+        {
+          extend: 'pdfHtml5',
+          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          orientation: 'landscape',
+          pageSize: 'A4'
+        },
+        {
+          extend: 'print',
+          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+        }
+      ]
+    });
+  });
+</script>
+
+{% endblock %}

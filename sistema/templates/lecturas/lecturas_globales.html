@@ -1,0 +1,159 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Lecturas de todos los usuarios</h1>
+
+<form method="get" action="{% url 'lecturas_globales' %}" class="row g-3 mb-3">  
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <label class="form-label">Año</label>
+      <p class="form-control-plaintext">{{ anio_actual }}</p>
+      <input type="hidden" name="anio" value="{{ anio_actual }}">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Mes</label>
+      <p class="form-control-plaintext">
+        {% for m, nombre in lista_meses %}
+          {% if m == mes_actual %}
+            {{ nombre }} ({{ mes_actual }})
+          {% endif %}
+        {% endfor %}
+      </p>
+      <input type="hidden" name="mes" value="{{ mes_actual }}">
+    </div>
+  </div>
+</form>
+
+<form method="post" action="{% url 'save_lecturas_globales' %}" id="form_lecturas">
+  {% csrf_token %}
+  <input type="hidden" name="anio" value="{{ anio_actual }}">
+  <input type="hidden" name="mes" value="{{ mes_actual }}">
+
+  <table class="table table-striped table-bordered" id="table_lecturas">
+    <thead>
+      <tr>
+        <th>Sector</th>
+        <th>DNI/Cedula</th>
+        <th>Usuario</th>
+        <th>Lectura anterior</th>
+        <th>Lectura actual</th>
+        <th>Consumo</th>
+        <th>Pagado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in usuarios %}
+      <tr>
+        <td>{{ item.usuario.sector.nombre }}</td>
+        <td>{{ item.usuario.dni_cedula }}</td>
+        <td>{{ item.usuario.apellido_paterno }} {{ item.usuario.apellido_materno }} {{ item.usuario.nombres }}</td>
+        <td>
+          <input type="number"
+                class="form-control"
+                value="{{ item.lectura_anterior }}"
+                disabled>
+        </td>
+        <td>
+          {% if item.pagado %}
+            <input type="number" class="form-control"
+                  value="{{ item.lectura_actual }}"
+                  disabled>
+            <small class="text-muted">Mes pagado, no editable</small>
+          {% else %}
+            <input type="number"
+                  name="lectura_actual_{{ item.usuario.id }}"
+                  value="{{ item.lectura_actual }}"
+                  class="form-control lectura-actual"
+                  data-anterior="{{ item.lectura_anterior }}">
+          {% endif %}
+        </td>
+        <td>
+          <input type="text" class="form-control consumo" value="{{ item.consumo }}" disabled>
+        </td>
+        <td>
+          {% if item.pagado %}
+            <span class="badge bg-success">Sí</span>
+          {% else %}
+            <span class="badge bg-secondary">No</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-success">Guardar lecturas</button>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function calcularConsumo(input) {
+    const fila = input.closest("tr");
+    const anterior = parseFloat(input.getAttribute("data-anterior")) || 0;
+    const actual = parseFloat(input.value) || 0;
+    const consumoInput = fila.querySelector(".consumo");
+    const consumo = actual - anterior;
+    consumoInput.value = consumo >= 0 ? consumo : "";
+  }
+
+  document.querySelectorAll(".lectura-actual").forEach(function (input) {
+    input.addEventListener("input", function () {
+      calcularConsumo(this);
+    });
+  });
+
+  function validarLecturas(event) {
+    const filas = document.querySelectorAll("#table_lecturas tbody tr");
+    let errores = [];
+
+    filas.forEach(function (tr) {
+      const sector = tr.children[0]?.innerText.trim() || "";
+      const dni = tr.children[1]?.innerText.trim() || "";
+      const usuarioNombre = tr.children[2]?.innerText.trim() || "";
+
+      const inputActual = tr.querySelector("input.lectura-actual");
+      if (!inputActual || inputActual.disabled) {
+        return;
+      }
+
+      const anterior = parseFloat(inputActual.getAttribute("data-anterior")) || 0;
+      const actualStr = inputActual.value;
+      if (actualStr === "") return;
+
+      const actual = parseFloat(actualStr);
+      if (isNaN(actual)) {
+        errores.push(`Lectura actual inválida para ${dni} (${usuarioNombre}).`);
+        return;
+      }
+
+      if (actual < anterior) {
+        errores.push(
+          `Lectura actual (${actual}) menor que la anterior (${anterior}) para ${dni} (${usuarioNombre}, sector ${sector}).`
+        );
+      }
+    });
+
+    if (errores.length > 0) {
+      event.preventDefault();
+      alert("Corrige los siguientes errores:\n\n" + errores.join("\n"));
+    }
+  }
+
+  const form = document.getElementById("form_lecturas");
+  if (form) {
+    form.addEventListener("submit", validarLecturas);
+  }
+
+  if (window.jQuery && $.fn.DataTable) {
+    $('#table_lecturas').DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      pageLength: 10,
+      order: [[0, "desc"]]
+    });
+  }
+});
+</script>
+{% endblock %}
