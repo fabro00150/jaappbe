@@ -3,7 +3,7 @@ from sistema.models import SistemaUsuario, SistemaSector, SistemaEvento, Sistema
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout as auth_login, logout
-from django.db.models import Sum, Count, Q, Prefetch, F
+from django.db.models import Sum, Count, Q, Prefetch, F, Exists, OuterRef
 from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
 from decimal import Decimal
@@ -90,7 +90,15 @@ def index(request):
 # =============Medidores============
 @login_required
 def list_medidores(request):
-    medidores = SistemaMedidor.objects.select_related('usuario').all()
+    medidores = (
+        SistemaMedidor.objects
+        .select_related('usuario')
+        .annotate(
+            tiene_lecturas=Exists(
+                SistemaLectura.objects.filter(medidor=OuterRef('pk'))
+            )
+        )
+    )
     return render(request, 'medidores/list_medidores.html', {
         'medidores': medidores
     })
@@ -159,8 +167,22 @@ def save_edit_medidor(request, id):
 
 @login_required
 def delete_medidor(request, id):
+    medidor = get_object_or_404(SistemaMedidor, id=id)
+
+    # ¿Hay lecturas con este medidor?
+    tiene_lecturas = SistemaLectura.objects.filter(medidor=medidor).exists()
+
+    # Opcional: si quisieras revisar pagos directamente:
+    # tiene_pagos = SistemaPago.objects.filter(lectura__medidor=medidor).exists()
+
+    if tiene_lecturas:
+        messages.error(
+            request,
+            "No se puede eliminar el medidor porque tiene lecturas asociadas."
+        )
+        return redirect('list_medidores')
+
     try:
-        medidor = SistemaMedidor.objects.get(id=id)
         medidor.delete()
         messages.success(request, 'Medidor eliminado correctamente')
     except Exception as e:
