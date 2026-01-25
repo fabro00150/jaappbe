@@ -42,11 +42,12 @@
         <th>Lectura actual</th>
         <th>Consumo</th>
         <th>Pagado</th>
+        <th>Foto</th>
       </tr>
     </thead>
     <tbody>
       {% for item in usuarios %}
-      <tr>
+      <tr class="{% if item.consumo and item.consumo > 20 %}table-danger{% endif %}">
         <td>{{ item.usuario.sector.nombre }}</td>
         <td>{{ item.usuario.dni_cedula }}</td>
         <td>{{ item.usuario.apellido_paterno }} {{ item.usuario.apellido_materno }} {{ item.usuario.nombres }}</td>
@@ -74,6 +75,7 @@
                   name="lectura_actual_{{ item.medidor.id }}"
                   value="{{ item.lectura_actual }}"
                   class="form-control lectura-actual"
+                  max="99999"
                   data-anterior="{{ item.lectura_anterior }}">
           {% endif %}
         </td>
@@ -87,9 +89,20 @@
             <span class="badge bg-secondary">No</span>
           {% endif %}
         </td>
+        <td>
+          {% if item.foto_url %}
+            <a href="{{ item.foto_url }}" target="_blank"
+              class="btn btn-outline-secondary btn-sm" title="Ver foto">
+              <i class="ti ti-eye"></i>
+            </a>
+          {% else %}
+            —
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
+
   </table>
   <button type="submit" class="btn btn-success">Guardar lecturas</button>
 </form>

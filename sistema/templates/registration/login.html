@@ -1,11 +1,11 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Flexy Free Bootstrap Admin Template by WrapPixel</title>
+  <title>J.A.C.A.P.S</title>
   <link rel="shortcut icon" type="image/png" href="{% static 'images/logo.png' %}" />
   <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />
 </head>
@@ -35,19 +35,20 @@
                     <label for="exampleInputPassword1" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="exampleInputPassword1" name="password">
                   </div>
-                  <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div class="form-check">
-                      <input class="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked>
-                      <label class="form-check-label text-dark" for="flexCheckChecked">
-                        Recordarme
-                      </label>
+                    <div class="d-flex align-items-center justify-content-between mb-4">                    
+                    <a class="text-primary fw-bold" href="javascript:void(0);" onclick="copyEmail('richardchimarro@gmail.com')">Olvidaste tu contraseña ?</a>                                        
                     </div>
-                    <a class="text-primary fw-bold" href="">Olvidaste tu contraseña ?</a>
-                  </div>
+                    <script>
+                    function copyEmail(email) {
+                      navigator.clipboard.writeText(email).then(() => {
+                      alert('Correo de contacto del administrador: ' + email);
+                      }).catch(() => {
+                      alert('No se pudo copiar el correo');
+                      });
+                    }
+                    </script>
                   <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Iniciar Sesión</button>
-                  <div class="d-flex align-items-center justify-content-center">
-                    <p class="fs-4 mb-0 fw-bold">¿Nuevo en J.A.C.A.P.S?</p>
-                    <a class="text-primary fw-bold ms-2" href="">Registrarse</a>
+                  <div class="d-flex align-items-center justify-content-center">                    
                   </div>
                 </form>
               </div>

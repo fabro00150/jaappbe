@@ -10,6 +10,7 @@ urlpatterns = [
     path('medidores/<int:id>/editar/', views.edit_medidor, name='edit_medidor'),
     path('medidores/<int:id>/guardar/', views.save_edit_medidor, name='save_edit_medidor'),
     path('medidores/<int:id>/eliminar/', views.delete_medidor, name='delete_medidor'),
+    path("medidores/mapa/", views.mapa_general_medidores, name="mapa_general_medidores"),
 
     # Usuarios
     path('list_users', views.list_users, name='list_users'),    
@@ -65,4 +66,7 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.exit, name='exit'),              
     
+    
+    # descargar apk
+    path('descargar-apk/', views.descargar_apk, name='descargar_apk'),
 ]

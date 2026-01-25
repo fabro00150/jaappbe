@@ -18,7 +18,7 @@
   <table class="table table-striped" id="tabla_asistencias">
     <thead>
       <tr>
-        <th>DNI</th>
+        <th>Cédula</th>
         <th>Nombre</th>
         <th>Sector</th>
         <th>Fecha/Hora</th>
@@ -27,7 +27,7 @@
     </thead>
     <tbody>
       {% for asistencia in asistencias %}
-      <tr data-estado="{% if asistencia.asistio %}asistio{% else %}no_asistio{% endif %}">
+      <tr data-estado="{% if asistencia.asistio %}asistio{% else %}no_asistio{% endif %} ">
         <td>{{ asistencia.usuario.dni_cedula }}</td>
         <td>{{ asistencia.usuario.nombres }} {{ asistencia.usuario.apellido_paterno }}</td>
         <td>{{ asistencia.usuario.sector.nombre }}</td>

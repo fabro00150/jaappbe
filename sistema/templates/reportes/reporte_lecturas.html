@@ -39,30 +39,37 @@
 <table id="table_reporte_lecturas" class="display table table-striped table-bordered">
   <thead>
     <tr>
-      <th> Medidor</th>
-      <th>Año</th>
-      <th>Mes</th>
       <th>DNI/Cédula</th>
       <th>Usuario</th>
       <th>Sector</th>
+      <th>Año</th>
+      <th>Mes</th>
+      <th>Medidor</th>
       <th>Lectura</th>
     </tr>
   </thead>
   <tbody>
-    {% for lec in lecturas %}
+    {% for fila in filas %}
     <tr>
+      <td>{{ fila.usuario.dni_cedula }}</td>
+      <td>{{ fila.usuario.apellido_paterno }} {{ fila.usuario.apellido_materno }} {{ fila.usuario.nombres }}</td>
+      <td>{{ fila.usuario.sector.nombre }}</td>
+      <td>{{ anio }}</td>
+      <td>{% if mes %}{{ mes }}{% else %}-{% endif %}</td>
       <td>
-        {% if lec.medidor %}
-          {{ lec.medidor.numero_serie }}
+        {% if fila.lectura and fila.lectura.medidor %}
+          {{ fila.lectura.medidor.numero_serie }}
         {% else %}
           —
         {% endif %}
-      <td>{{ lec.anio }}</td>
-      <td>{{ lec.mes }}</td>
-      <td>{{ lec.usuario.dni_cedula }}</td>
-      <td>{{ lec.usuario.apellido_paterno }} {{ lec.usuario.apellido_materno }} {{ lec.usuario.nombres }}</td>
-      <td>{{ lec.usuario.sector.nombre }}</td>
-      <td>{{ lec.consumo }}</td>
+      </td>
+      <td>
+        {% if fila.lectura %}
+          {{ fila.lectura.consumo }}
+        {% else %}
+          —
+        {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>

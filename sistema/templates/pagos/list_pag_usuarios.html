@@ -7,6 +7,7 @@
 <table id="table_users" class="display table table-striped table-bordered">
     <thead style="color: #1E1E1E;">
         <tr>
+            <th>ID</th>
             <th>DNI/Cedula</th>
             <th>Nombres</th>
             <th>Sector</th>           
@@ -16,6 +17,7 @@
     <tbody>
         {% for usuario in usuarios %}
         <tr style="color: #1E1E1E;">
+            <td>{{ usuario.id }}</td>
             <td>{{ usuario.dni_cedula }}</td>
             <td>{{ usuario.apellido_paterno }} {{ usuario.apellido_materno }} {{ usuario.nombres }}</td>        
             <td>{{ usuario.sector.nombre }}</td>

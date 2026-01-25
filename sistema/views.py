@@ -169,11 +169,8 @@ def save_edit_medidor(request, id):
 def delete_medidor(request, id):
     medidor = get_object_or_404(SistemaMedidor, id=id)
 
-    # ¿Hay lecturas con este medidor?
     tiene_lecturas = SistemaLectura.objects.filter(medidor=medidor).exists()
 
-    # Opcional: si quisieras revisar pagos directamente:
-    # tiene_pagos = SistemaPago.objects.filter(lectura__medidor=medidor).exists()
 
     if tiene_lecturas:
         messages.error(
@@ -189,6 +186,40 @@ def delete_medidor(request, id):
         messages.error(request, f'Error al eliminar medidor: {e}')
 
     return redirect('list_medidores')
+
+@login_required
+def mapa_general_medidores(request):
+    medidores = (
+        SistemaMedidor.objects
+        .select_related("usuario", "usuario__sector")
+        .all()
+    )
+
+    puntos = []
+    for m in medidores:
+        if not m.coordenadas:
+            continue
+        try:
+            lat_str, lng_str = m.coordenadas.split(",")
+            lat = float(lat_str.strip())
+            lng = float(lng_str.strip())
+        except (ValueError, AttributeError):
+            continue
+
+        puntos.append({
+            "id": m.id,
+            "lat": lat,
+            "lng": lng,
+            "numero_serie": m.numero_serie,
+            "usuario": f"{m.usuario.apellido_paterno} {m.usuario.apellido_materno} {m.usuario.nombres}",
+            "dni": m.usuario.dni_cedula,
+            "sector": m.usuario.sector.nombre if m.usuario.sector else "",
+            "observaciones": m.observaciones or "",
+        })
+
+    return render(request, "medidores/mapa_general.html", {
+        "puntos_json": json.dumps(puntos),
+    })
 
 # =============Usuarios============
 @login_required
@@ -361,15 +392,11 @@ from datetime import date
 from django.shortcuts import get_object_or_404
 
 @login_required
-def list_meses_lecturas(request):
-    # Obtiene pares año-mes distintos donde hay lecturas
+def list_meses_lecturas(request):    
     meses = (SistemaLectura.objects
              .values('anio', 'mes')
              .order_by('anio', 'mes')
              .distinct())
-
-    # Si quieres orden descendente:
-    # meses = meses.order_by('-anio', '-mes')
 
     return render(request, 'lecturas/list_sec_lec.html', {
         'meses': meses,
@@ -388,11 +415,16 @@ def lecturas_globales(request):
         (9, "Septiembre"), (10, "Octubre"), (11, "Noviembre"), (12, "Diciembre"),
     ]
 
-    # todos los medidores con su usuario y sector
     medidores = (
         SistemaMedidor.objects
         .select_related("usuario", "usuario__sector")
-        .order_by("usuario__sector__nombre", "usuario__apellido_paterno", "usuario__apellido_materno", "usuario__nombres", "numero_serie")
+        .order_by(
+            "usuario__sector__nombre",
+            "usuario__apellido_paterno",
+            "usuario__apellido_materno",
+            "usuario__nombres",
+            "numero_serie",
+        )
     )
 
     datos = []
@@ -415,7 +447,7 @@ def lecturas_globales(request):
 
         consumo = None
         if lectura_actual and lectura_anterior:
-            consumo = lectura_actual.consumo - lectura_anterior.consumo
+            consumo = (lectura_actual.consumo or 0) - (lectura_anterior.consumo or 0)
 
         pago = None
         pagado = False
@@ -430,16 +462,32 @@ def lecturas_globales(request):
             "medidor": med,
             "lectura_actual": lectura_actual.consumo if lectura_actual else "",
             "lectura_anterior": lectura_anterior.consumo if lectura_anterior else "",
-            "consumo": consumo if consumo is not None else "",
+            "consumo": consumo,
             "pagado": pagado,
+            "foto_url": lectura_actual.foto.url if (lectura_actual and lectura_actual.foto) else None,
         })
+
+    # ordenar y consumo_str como ya definimos antes
+    datos.sort(
+        key=lambda x: (
+            not (x["consumo"] is not None and x["consumo"] > 20),
+            x["usuario"].sector.nombre,
+            x["usuario"].apellido_paterno,
+            x["usuario"].apellido_materno,
+            x["usuario"].nombres,
+            x["medidor"].numero_serie,
+        )
+    )
+    for d in datos:
+        d["consumo_str"] = "" if d["consumo"] is None else d["consumo"]
+
 
     return render(request, "lecturas/lecturas_globales.html", {
         "anio_actual": anio_actual,
         "mes_actual": mes_actual,
         "lista_anios": lista_anios,
         "lista_meses": lista_meses,
-        "usuarios": datos,  # ahora cada item es usuario+medidor
+        "usuarios": datos,
     })
     
 @login_required
@@ -570,8 +618,7 @@ def edit_tarifa(request, id):
         except Exception as e:
             messages.error(request, f"Error al actualizar la tarifa: {e}")
             return redirect("list_tarifas")
-
-    # GET: mostrar formulario con datos de esa tarifa
+    
     return render(request, "tarifas/edit_tarifa.html", {"tarifa": tarifa})
 
 
@@ -600,10 +647,8 @@ def process_pag_usuario(request, id):
     tarifa_activa = SistemaTarifa.objects.filter(activa=True).first()
     tarifa_valor = tarifa_activa.tarifa if tarifa_activa else Decimal("0.00")
 
-    # medidores del usuario para el select
     medidores_usuario = SistemaMedidor.objects.filter(usuario=usuario).order_by("numero_serie")
-
-    # medidor seleccionado (GET)
+    
     medidor_id = request.GET.get("medidor_id", "")
     if medidor_id == "":
         medidor_id_int = None
@@ -617,7 +662,6 @@ def process_pag_usuario(request, id):
         .order_by('anio', 'mes', 'medidor_id')
     )
     # si se seleccionó un medidor, se filtran lecturas para el recibo/gráfico;
-    # la tabla puedes dejarla con todas o también filtrarla, tú decides.
     lecturas_filtradas = lecturas_qs
     if medidor_id_int:
         lecturas_filtradas = lecturas_qs.filter(medidor_id=medidor_id_int)
@@ -798,18 +842,25 @@ def exit(request):
 def asistencia_evento(request, evento_id):
     evento = get_object_or_404(SistemaEvento, id=evento_id)
 
-    # Si no existen asistencias, crearlas automáticamente
-    if not SistemaAsistencia.objects.filter(evento=evento).exists():
-        usuarios = SistemaUsuario.objects.all()  # o filtra por sector si aplica
-        for usuario in usuarios:
-            SistemaAsistencia.objects.create(
-                evento=evento,
-                usuario=usuario,
-                fecha_hora=evento.fecha, 
-                asistio=False
-            )
+    # crear asistencias faltantes para usuarios nuevos
+    usuarios = SistemaUsuario.objects.all()
+    for usuario in usuarios:
+        SistemaAsistencia.objects.get_or_create(
+            evento=evento,
+            usuario=usuario,
+            defaults={
+                "fecha_hora": evento.fecha,
+                "asistio": False,
+            }
+        )
 
-    asistencias = SistemaAsistencia.objects.filter(evento=evento).select_related("usuario__sector")
+    asistencias = (
+        SistemaAsistencia.objects
+        .filter(evento=evento)
+        .select_related("usuario__sector")
+        .order_by("usuario__sector__nombre", "usuario__apellido_paterno", "usuario__apellido_materno")
+    )
+
     return render(request, "eventos/asistencia_evento.html", {
         "evento": evento,
         "asistencias": asistencias
@@ -833,50 +884,52 @@ def save_asistencias(request, evento_id):
 def reporte_pagos(request):
     hoy = date.today()
 
-    # Filtros GET
+    # filtros
     anio = int(request.GET.get("anio", hoy.year))
     mes = request.GET.get("mes")              # "" o "1".."12"
     sector_id = request.GET.get("sector", "") # "" o id
     estado = request.GET.get("estado", "")    # "" / "pagado" / "pendiente"
 
-    # Base: lecturas con usuario y sector
-    lecturas = (
-        SistemaLectura.objects
-        .select_related("usuario", "usuario__sector")
-        .filter(anio=anio)
-        .order_by("-anio", "-mes", "usuario__apellido_paterno", "usuario__apellido_materno", "usuario__nombres")
+    usuarios_qs = (
+        SistemaUsuario.objects
+        .select_related("sector")
+        .order_by("sector__nombre", "apellido_paterno", "apellido_materno", "nombres")
     )
-
-    if mes:
-        lecturas = lecturas.filter(mes=int(mes))
 
     if sector_id:
-        lecturas = lecturas.filter(usuario__sector_id=sector_id)
+        usuarios_qs = usuarios_qs.filter(sector_id=sector_id)
 
-    # Traer pagos relacionados (un pago por lectura/usuario/mes)
-    pagos = SistemaPago.objects.all()
-    lecturas = lecturas.prefetch_related(
-        Prefetch("sistemapago_set", queryset=pagos, to_attr="pagos_rel")
-    )
-
-    # Armar lista de filas con estado pagado
     filas = []
-    for lec in lecturas:
-        pago = lec.pagos_rel[0] if getattr(lec, "pagos_rel", []) else None
-        if estado == "pagado" and not (pago and pago.estado):
+
+    for usuario in usuarios_qs:
+        lecturas_qs = SistemaLectura.objects.filter(usuario=usuario, anio=anio)
+        if mes:
+            lecturas_qs = lecturas_qs.filter(mes=int(mes))
+
+        # si manejas una lectura por mes/medidor, aquí puedes decidir:
+        lectura = lecturas_qs.first()
+
+        if lectura:
+            pago = SistemaPago.objects.filter(lectura=lectura, usuario=usuario).first()
+        else:
+            pago = None
+
+        pagado = bool(pago and pago.estado)
+
+        # filtro por estado (pagado/pendiente)
+        if estado == "pagado" and not pagado:
             continue
-        if estado == "pendiente" and (pago and pago.estado):
+        if estado == "pendiente" and pagado:
             continue
 
         filas.append({
-            "anio": lec.anio,
-            "mes": lec.mes,
-            "usuario": lec.usuario,
-            "sector": lec.usuario.sector,
-            "lectura_actual": lec.consumo,
-            # si quieres lectura_anterior y consumo, deberás calcularlos aparte
-            "consumo": lec.consumo,  # placeholder
-            "pagado": bool(pago and pago.estado),
+            "anio": anio,
+            "mes": int(mes) if mes else "",
+            "usuario": usuario,
+            "sector": usuario.sector,
+            "lectura_actual": lectura.consumo if lectura else None,
+            "consumo": lectura.consumo if lectura else None,  # o calcula diferencia con mes anterior
+            "pagado": pagado,
             "monto": pago.monto if pago else None,
             "fecha_pago": pago.fecha_pago if pago else None,
         })
@@ -905,23 +958,41 @@ def reporte_pagos(request):
 def reporte_lecturas(request):
     hoy = date.today()
 
-    # Filtros GET
     anio = int(request.GET.get("anio", hoy.year))
     mes = request.GET.get("mes")          # "" o "1".."12"
-    sector_id = request.GET.get("sector", "")  # "" o id
+    sector_id = request.GET.get("sector", "")
 
-    lecturas = (
-        SistemaLectura.objects
-        .select_related("usuario", "usuario__sector")
-        .filter(anio=anio)
-        .order_by("-anio", "-mes", "usuario__apellido_paterno", "usuario__apellido_materno", "usuario__nombres")
+    usuarios_qs = (
+        SistemaUsuario.objects
+        .select_related("sector")
+        .order_by("sector__nombre", "apellido_paterno", "apellido_materno", "nombres")
     )
 
-    if mes:
-        lecturas = lecturas.filter(mes=int(mes))
-
     if sector_id:
-        lecturas = lecturas.filter(usuario__sector_id=sector_id)
+        usuarios_qs = usuarios_qs.filter(sector_id=sector_id)
+
+    filas = []
+
+    for usuario in usuarios_qs:
+        if mes:
+            lecturas_qs = SistemaLectura.objects.filter(
+                usuario=usuario,
+                anio=anio,
+                mes=int(mes)
+            )
+        else:
+            lecturas_qs = SistemaLectura.objects.filter(
+                usuario=usuario,
+                anio=anio,
+            )
+
+        # si quieres solo una fila por usuario (p.ej. mes concreto):
+        lectura = lecturas_qs.first()
+
+        filas.append({
+            "usuario": usuario,
+            "lectura": lectura,
+        })
 
     lista_anios = list(range(hoy.year - 5, hoy.year + 1))
     lista_meses = [
@@ -932,7 +1003,7 @@ def reporte_lecturas(request):
     sectores = SistemaSector.objects.all().order_by("nombre")
 
     context = {
-        "lecturas": lecturas,
+        "filas": filas,
         "anio": anio,
         "mes": int(mes) if mes else "",
         "sector_id": sector_id,
@@ -942,6 +1013,23 @@ def reporte_lecturas(request):
     }
     return render(request, "reportes/reporte_lecturas.html", context)
 
+
+# =============Descargar APK============
+import os
+from django.conf import settings
+from django.http import FileResponse, Http404
+@login_required
+def descargar_apk(request):
+    apk_path = os.path.join(settings.MEDIA_ROOT, 'apk', 'app-debug.apk')
+    if not os.path.exists(apk_path):
+        raise Http404("Archivo APK no encontrado.")
+
+    return FileResponse(
+        open(apk_path, 'rb'),
+        as_attachment=True,
+        filename='jaap-app.apk',
+        content_type='application/vnd.android.package-archive',
+    )
 
 from rest_framework import viewsets
 import json
