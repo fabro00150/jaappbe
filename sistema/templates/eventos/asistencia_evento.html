@@ -27,7 +27,7 @@
     </thead>
     <tbody>
       {% for asistencia in asistencias %}
-      <tr data-estado="{% if asistencia.asistio %}asistio{% else %}no_asistio{% endif %} ">
+      <tr data-estado="{% if asistencia.asistio %}asistio{% else %}no_asistio{% endif %}">
         <td>{{ asistencia.usuario.dni_cedula }}</td>
         <td>{{ asistencia.usuario.nombres }} {{ asistencia.usuario.apellido_paterno }}</td>
         <td>{{ asistencia.usuario.sector.nombre }}</td>
@@ -44,30 +44,44 @@
   <button type="submit" class="btn btn-primary">Guardar asistencias</button>
 </form>
 <script>
-    $(document).ready(function() {
-        $('#tabla_asistencias').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-            },
-            "pageLength": 10,
-            "order": [[0, "desc"]]
-        });
-    });
-</script>
-<script>
-function filtrarTabla() {
-  const filtro = document.getElementById("filtro").value;
-  const filas = document.querySelectorAll("#tabla_asistencias tbody tr");
+  let tabla;
 
-  filas.forEach(fila => {
-    if (filtro === "todos") {
-      fila.style.display = "";
-    } else if (fila.dataset.estado === filtro) {
-      fila.style.display = "";
-    } else {
-      fila.style.display = "none";
-    }
+  $(document).ready(function() {
+    tabla = $('#tabla_asistencias').DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      pageLength: 10,
+      order: [[0, "desc"]]
+    });
+
+    // registrar el filtro cuando cambie el select
+    $('#filtro').on('change', function() {
+      const valor = this.value;
+
+      if (valor === 'todos') {
+        // sin filtro
+        $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(
+          f => f._miFiltroAsistencia !== true
+        );
+      } else {
+        // añadir función de filtro personalizada
+        $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(
+          f => f._miFiltroAsistencia !== true
+        );
+
+        const filtroFn = function(settings, data, dataIndex) {
+          const fila = tabla.row(dataIndex).node();
+          const estado = fila.dataset.estado; // "asistio" o "no_asistio"
+          return estado === valor;
+        };
+        filtroFn._miFiltroAsistencia = true;
+        $.fn.dataTable.ext.search.push(filtroFn);
+      }
+
+      tabla.draw();
+    });
   });
-}
 </script>
+
 {% endblock %}

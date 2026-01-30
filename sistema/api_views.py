@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
@@ -93,27 +93,40 @@ class SistemaEventoViewSet(viewsets.ModelViewSet):
             'data': serializer.data
         })
 
-class SistemaAsistenciaViewSet(viewsets.ModelViewSet):
+class SistemaAsistenciaViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = SistemaAsistencia.objects.all()
     serializer_class = SistemaAsistenciaSerializer
 
     @action(detail=False, methods=['post'])
     def sync(self, request):
-        """Endpoint para sincronizar asistencias desde Flutter"""
+        """
+        Endpoint para sincronizar asistencias hacia Flutter (solo descarga).
+        La app NO crea asistencias; solo las lee y actualiza.
+        Opcionalmente puede filtrar por evento.
+        """
         updated_after = request.data.get('updated_after')
-        
+        evento_id = request.data.get('evento')  # opcional
+
+        queryset = self.get_queryset()
+
+        if evento_id:
+            queryset = queryset.filter(evento_id=evento_id)
+
         if updated_after:
-            from django.utils.dateparse import parse_datetime
-            queryset = self.get_queryset().filter(updated_at__gte=parse_datetime(updated_after))
-        else:
-            queryset = self.get_queryset()
-        
+            queryset = queryset.filter(
+                updated_at__gte=parse_datetime(updated_after)
+            )
+
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             'timestamp': timezone.now().isoformat(),
             'data': serializer.data
         })
-
 class SistemaTarifaViewSet(viewsets.ModelViewSet):
     queryset = SistemaTarifa.objects.all()
     serializer_class = SistemaTarifaSerializer

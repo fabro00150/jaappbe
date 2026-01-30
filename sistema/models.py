@@ -132,6 +132,7 @@ class SistemaAsistencia(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
+        unique_together = (('evento', 'usuario'),)
         managed = False
         db_table = 'sistema_asistencia'
 

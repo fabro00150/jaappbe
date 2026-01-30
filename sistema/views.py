@@ -385,6 +385,25 @@ def delete_tipo_evento(request, id):
     except Exception as e:
         messages.error(request, 'Error al eliminar el tipo de evento')
         return render(request, 'eventos/list_tipo_evento.html', {'tipo_eventos': SistemaEvento.objects.all()})
+    
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=SistemaEvento)
+def crear_asistencias_para_evento(sender, instance, created, **kwargs):
+    if not created:
+        return
+    usuarios = SistemaUsuario.objects.all()
+    for usuario in usuarios:
+        SistemaAsistencia.objects.get_or_create(
+            evento=instance,
+            usuario=usuario,
+            defaults={
+                "fecha_hora": instance.fecha,
+                "asistio": False,
+            }
+        )
+
 
 
 # =============Lecturas============
