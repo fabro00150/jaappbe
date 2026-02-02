@@ -1,0 +1,51 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1>Mapa general de los medidores</h1>
+
+<div id="map" style="width: 100%; height: 600px;"></div>
+
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+<script>
+  const puntos = {{ puntos_json|safe }};
+
+  // centra en Quito, ajusta si quieres otra zona
+  const map = L.map('map').setView([-0.1807, -78.4678], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const bounds = [];
+
+  puntos.forEach(p => {
+    const marker = L.marker([p.lat, p.lng]).addTo(map);
+    const popupHtml = `
+      <b>Medidor:</b> ${p.numero_serie}<br>
+      <b>Usuario:</b> ${p.usuario}<br>
+      <b>DNI:</b> ${p.dni}<br>
+      <b>Sector:</b> ${p.sector}<br>
+      <b>Obs.:</b> ${p.observaciones}
+    `;
+    marker.bindPopup(popupHtml);
+    bounds.push([p.lat, p.lng]);
+  });
+
+  if (bounds.length > 0) {
+    map.fitBounds(bounds, {padding: [20, 20]});
+  }
+</script>
+
+{% endblock %}

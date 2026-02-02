@@ -128,8 +128,8 @@ class SistemaAsistencia(models.Model):
     asistio = models.BooleanField()
     evento = models.ForeignKey('SistemaEvento', models.DO_NOTHING)
     usuario = models.ForeignKey('SistemaUsuario', models.DO_NOTHING)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
 
     class Meta:
         unique_together = (('evento', 'usuario'),)

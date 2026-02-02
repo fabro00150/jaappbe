@@ -1,0 +1,11 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1>Descarga de App móvil</h1>
+<p>Puedes descargar la versión más reciente de la app Android desde el siguiente enlace:</p>
+
+<a href="{% url 'descargar_apk' %}" class="btn btn-success">
+  Descargar APK
+</a>
+
+{% endblock %}
