@@ -11,7 +11,7 @@ from datetime import date
 from django.urls import reverse
 from django.utils import timezone
 import json
-# Create your views here.
+
 @login_required
 def index(request):
     lecturas = SistemaLectura.objects.all()
