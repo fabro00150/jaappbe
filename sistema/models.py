@@ -143,8 +143,8 @@ class SistemaEvento(models.Model):
     fecha = models.DateTimeField()
     lugar = models.CharField(max_length=200)
     descripcion = models.TextField()
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     
     class Meta:
         managed = False

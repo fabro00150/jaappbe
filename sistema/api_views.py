@@ -101,7 +101,19 @@ class SistemaAsistenciaViewSet(
 ):
     queryset = SistemaAsistencia.objects.all()
     serializer_class = SistemaAsistenciaSerializer
-
+    
+    def update(self, request, *args, **kwargs):        
+        try:
+            return super().update(request, *args, **kwargs)
+        except SistemaAsistencia.DoesNotExist:
+                # Si falla (porque el ID no existe), intentamos crear
+                # Nota: Esto requiere que el frontend envie todos los datos necesarios
+                serializer = self.get_serializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            
     @action(detail=False, methods=['post'])
     def sync(self, request):
         """
