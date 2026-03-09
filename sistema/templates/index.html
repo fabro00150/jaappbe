@@ -240,13 +240,14 @@
                 </li>                
               </ul>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{% url 'descargar_apk' %}" aria-expanded="false" style="background-color: #28a745;">
-              <i class="ti ti-atom"></i>
-              <span class="hide-menu">Descargar 
-                <br> Aplicación Móvil</span>
-              </a>
+            <li class="sidebar-item">                
+                <a class="sidebar-link" href="#" data-bs-toggle="modal" data-bs-target="#modalInstalacionApk" aria-expanded="false" style="background-color: #28a745;">
+                    <i class="ti ti-atom"></i>
+                    <span class="hide-menu">Descargar 
+                    <br> Aplicación Móvil</span>
+                </a>
             </li>
+
             {% else %}
             <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'login' %}" aria-expanded="false">
@@ -473,8 +474,47 @@
         </div>
       </div>
     </div>
+  </div> 
+  <div class="modal fade" id="modalInstalacionApk" tabindex="-1" aria-labelledby="modalInstalacionApkLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header bg-success text-white">
+                  <h5 class="modal-title" id="modalInstalacionApkLabel">
+                      <i class="ti ti-download me-2"></i>Instalación de la App
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="alert alert-warning d-flex align-items-center" role="alert">
+                      <i class="ti ti-alert-triangle me-2 fs-4"></i>
+                      <div>
+                          <strong>Importante:</strong> Necesita activar permisos para instalar aplicaciones de orígenes desconocidos.
+                      </div>
+                  </div>
+
+                  <h6><strong>Instrucciones paso a paso:</strong></h6>
+                  <ol class="mb-3">
+                      <li>Haga clic en el botón verde <strong>"Descargar APK"</strong> abajo.</li>
+                      <li>Abra el archivo descargado (en la carpeta "Downloads" o notificaciones).</li>
+                      <li>Si aparece un aviso de seguridad, toque <strong>"Configuración"</strong>.</li>
+                      <li>Active el permiso para su navegador (Chrome, Samsung, etc.):
+                          <br>
+                          <span class="badge bg-light text-dark border mt-1 p-2 d-block text-start">
+                              <i class="ti ti-toggle-right text-success me-1"></i> <strong>Permitir de esta fuente</strong>
+                          </span>
+                      </li>
+                      <li>Regrese y presione <strong>"Instalar"</strong>.</li>
+                  </ol>
+              </div>
+              <div class="modal-footer">
+                  <!-- Aquí va el enlace real de descarga -->
+                  <a href="{% url 'descargar_apk' %}" class="btn btn-success btn-lg w-100">
+                      <i class="ti ti-download me-2"></i>Descargar APK
+                  </a>
+              </div>
+          </div>
+      </div>
   </div>
-  
   <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'assets/js/sidebarmenu.js' %}"></script>
   <script src="{% static 'assets/js/app.min.js' %}"></script>

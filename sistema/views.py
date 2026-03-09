@@ -1039,7 +1039,7 @@ from django.conf import settings
 from django.http import FileResponse, Http404
 @login_required
 def descargar_apk(request):
-    apk_path = os.path.join(settings.MEDIA_ROOT, 'apk', 'app-debug.apk')
+    apk_path = os.path.join(settings.MEDIA_ROOT, 'apk', 'app-release.apk')
     if not os.path.exists(apk_path):
         raise Http404("Archivo APK no encontrado.")
 
