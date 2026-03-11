@@ -44,7 +44,7 @@
   </div>
 </form>
 
-<table id="table_reporte_lecturas" class="display table table-striped table-bordered">
+<table id="table_reporte_pagos" class="display table table-striped table-bordered">
   <thead>
     <tr>
       <th>Año</th>
@@ -52,6 +52,7 @@
       <th>DNI/Cédula</th>
       <th>Usuario</th>
       <th>Sector</th>
+      <th>Medidor</th>
       <th>Consumo m³</th>
       <th>Monto</th>
       <th>Estado</th>
@@ -66,18 +67,40 @@
       <td>{{ fila.usuario.dni_cedula }}</td>
       <td>{{ fila.usuario.apellido_paterno }} {{ fila.usuario.apellido_materno }} {{ fila.usuario.nombres }}</td>
       <td>{{ fila.sector.nombre }}</td>
-      <td>{{ fila.consumo }}</td>
-      <td>{{ fila.monto|default:"-" }}</td>
-      <td>{% if fila.pagado %}Pagado{% else %}Pendiente{% endif %}</td>
-      <td>{{ fila.fecha_pago|default:"-" }}</td>
+      <td>{{ fila.medidor.numero_serie|default:"-" }}</td>
+      <td>{{ fila.consumo|default:"-" }}</td>
+      <td>
+        {% if fila.monto %}
+          ${{ fila.monto|floatformat:2 }}
+        {% else %}
+          -
+        {% endif %}
+      </td>
+      <td>
+        {% if fila.pagado %}
+          <span class="badge bg-success">Pagado</span>
+        {% else %}
+          <span class="badge bg-warning">Pendiente</span>
+        {% endif %}
+      </td>
+      <td>{{ fila.fecha_pago|date:"d/m/Y"|default:"-" }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
+<!-- Usuario que exporta -->
+<div class="alert alert-info mt-3">
+  <strong>📅 Generado el:</strong> {% now "d/m/Y H:i:s" %} | 
+  <strong>👤 Generado por:</strong> {{ usuario_logueado.get_full_name|default:usuario_logueado.username }}
+</div>
+
 <script>
   $(document).ready(function() {
-    $('#table_reporte_lecturas').DataTable({
+    var usuarioNombre = '{{ usuario_logueado.get_full_name|default:usuario_logueado.username }}';
+    var fechaActual = '{% now "d/m/Y H:i" %}';
+
+    $('#table_reporte_pagos').DataTable({
       language: {
         url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
       },
@@ -87,17 +110,20 @@
       buttons: [
         {
           extend: 'excelHtml5',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+          title: 'Reporte Pagos {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          messageTop: 'Generado por: ' + usuarioNombre + ' | Fecha: ' + fechaActual
         },
         {
           extend: 'pdfHtml5',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          title: 'Reporte Pagos {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
           orientation: 'landscape',
-          pageSize: 'A4'
+          pageSize: 'A4',
+          messageBottom: '\nGenerado por: ' + usuarioNombre + ' | Fecha: ' + fechaActual
         },
         {
           extend: 'print',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+          title: 'Reporte Pagos {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          messageBottom: '<br><strong>Generado por:</strong> ' + usuarioNombre + ' | <strong>Fecha:</strong> ' + fechaActual
         }
       ]
     });

@@ -46,6 +46,7 @@
       <th>Mes</th>
       <th>Medidor</th>
       <th>Lectura</th>
+      <th>Consumo m³</th>
     </tr>
   </thead>
   <tbody>
@@ -55,7 +56,15 @@
       <td>{{ fila.usuario.apellido_paterno }} {{ fila.usuario.apellido_materno }} {{ fila.usuario.nombres }}</td>
       <td>{{ fila.usuario.sector.nombre }}</td>
       <td>{{ anio }}</td>
-      <td>{% if mes %}{{ mes }}{% else %}-{% endif %}</td>
+      <td>
+        {% if fila.lectura %}
+          {% for m_val, m_nom in lista_meses %}
+            {% if m_val == fila.lectura.mes %}{{ m_nom }}{% endif %}
+          {% endfor %}
+        {% else %}
+          —
+        {% endif %}
+      </td>
       <td>
         {% if fila.lectura and fila.lectura.medidor %}
           {{ fila.lectura.medidor.numero_serie }}
@@ -70,34 +79,57 @@
           —
         {% endif %}
       </td>
+      <td>
+        {% if fila.consumo %}
+          {{ fila.consumo }}
+        {% else %}
+          —
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="8" class="text-center text-muted">No hay registros</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
+<!-- Usuario que exporta -->
+<div class="alert alert-info mt-3">
+  <strong>Generado el:</strong> {% now "d/m/Y H:i:s" %} <br>
+  <strong>Generado por:</strong> {{ usuario_logueado.get_full_name|default:usuario_logueado.username }}
+</div>
+
 <script>
   $(document).ready(function() {
+    var usuarioNombre = '{{ usuario_logueado.get_full_name|default:usuario_logueado.username }}';
+    var fechaActual = '{% now "d/m/Y H:i" %}';
+
     $('#table_reporte_lecturas').DataTable({
       language: {
         url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
       },
       pageLength: 25,
-      order: [[0, "desc"], [1, "desc"]],
+      order: [[3, "desc"], [4, "asc"]],
       dom: 'Bfrtip',
       buttons: [
         {
           extend: 'excelHtml5',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+          title: 'Reporte Lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          messageTop: 'Generado por: ' + usuarioNombre + ' | Fecha: ' + fechaActual
         },
         {
           extend: 'pdfHtml5',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          title: 'Reporte Lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
           orientation: 'landscape',
-          pageSize: 'A4'
+          pageSize: 'A4',
+          messageBottom: '\nGenerado por: ' + usuarioNombre + ' | Fecha: ' + fechaActual
         },
         {
           extend: 'print',
-          title: 'Reporte lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}'
+          title: 'Reporte Lecturas {{ anio }}{% if mes %}-{{ mes }}{% endif %}',
+          messageBottom: '<br><strong>Generado por:</strong> ' + usuarioNombre + ' | <strong>Fecha:</strong> ' + fechaActual
         }
       ]
     });

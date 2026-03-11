@@ -1,5 +1,8 @@
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from rest_framework_simplejwt.views import TokenRefreshView
+
 urlpatterns = [
     path('', views.index, name='index'),
 
@@ -62,11 +65,33 @@ urlpatterns = [
     path("reportes/pagos/", views.reporte_pagos, name="reporte_pagos"),
     path("reportes/lecturas/", views.reporte_lecturas, name="reporte_lecturas"),
             
-    # Login
-    path('login', views.login, name='login'),
-    path('logout', views.exit, name='exit'),              
+    # Login usando vistas integradas de Django
+    path('login/', auth_views.LoginView.as_view(
+        template_name='registration/login.html',
+        redirect_authenticated_user=True  # ← Redirige si ya está logueado
+    ), name='login'),
+    
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     
     # descargar apk
     path('descargar-apk/', views.descargar_apk, name='descargar_apk'),
+    
+    
+     # Admin personalizado - Grupos
+    path('admin-sistema/grupos/', views.admin_grupos, name='admin_grupos'),
+    path('admin-sistema/grupos/crear/', views.admin_grupo_crear, name='admin_grupo_crear'),
+    path('admin-sistema/grupos/<int:grupo_id>/editar/', views.admin_grupo_editar, name='admin_grupo_editar'),
+    path('admin-sistema/grupos/<int:grupo_id>/eliminar/', views.admin_grupo_eliminar, name='admin_grupo_eliminar'),
+    
+    # Admin personalizado - Usuarios
+    path('admin-sistema/usuarios/', views.admin_usuarios_sistema, name='admin_usuarios_sistema'),
+    path('admin-sistema/usuarios/crear/', views.admin_usuario_crear, name='admin_usuario_crear'),
+    path('admin-sistema/usuarios/<int:usuario_id>/editar/', views.admin_usuario_editar, name='admin_usuario_editar'),
+    path('admin-sistema/usuarios/<int:usuario_id>/eliminar/', views.admin_usuario_eliminar, name='admin_usuario_eliminar'),
+    
+    
+    # ============= API APP MÓVIL =============
+    path('api/token/', views.AppMovilTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
