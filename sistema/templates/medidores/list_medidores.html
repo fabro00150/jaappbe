@@ -25,7 +25,7 @@
     <tr>
       <td>{{ forloop.counter }}</td>
       <td>{{ m.numero_serie }}</td>
-      <td>{{ m.usuario.nombres }} {{ m.usuario.apellido_paterno }}</td>
+      <td>{{ m.usuario.nombres }} {{ m.usuario.apellido_paterno }} {{ m.usuario.apellido_materno|default:"-" }}</td>
       <td>{{ m.coordenadas }}</td>
       <td>{{ m.fecha_instalacion }}</td>
       <td>{{ m.observaciones|default:"-" }}</td>
