@@ -7,22 +7,29 @@
 <table id="table_users" class="display table table-striped table-bordered">
     <thead style="color: #1E1E1E;">
         <tr>
+            {% if user.is_staff %}
             <th>ID</th>
-            <th>DNI/Cedula</th>
+            {% endif %}
+            <th>Cédula</th>
             <th>Nombres</th>
             <th>Sector</th>           
-            <th>Acciones</th>
+            <th>Acciones</th>            
         </tr>
     </thead>
     <tbody>
         {% for usuario in usuarios %}
         <tr style="color: #1E1E1E;">
+            {% if user.is_staff %}
             <td>{{ usuario.id }}</td>
+            {% endif %}
             <td>{{ usuario.dni_cedula }}</td>
             <td>{{ usuario.apellido_paterno }} {{ usuario.apellido_materno }} {{ usuario.nombres }}</td>        
             <td>{{ usuario.sector.nombre }}</td>
             <td>
+                {% if perms.sistema.edit_sistemapago %}
                 <a class="btn btn-primary" href="{% url 'process_pag_usuario' usuario.id %}">Pagar</a>                
+                {% endif %}
+                
             </td>
         </tr>
         {% endfor %}

@@ -26,7 +26,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-
   <!-- LIBREIAS IZITOAST -->
   <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
@@ -41,227 +40,271 @@
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="dynamic" data-header-position="dynamic">    
     <!-- Sidebar Start -->
+    <!-- En tu template base, reemplaza el sidebar por este -->
+
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
-      <div>
-        <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="{% url 'index' %}" class="text-nowrap logo-img">            
-            <span class="card-title">JAAP Buena Esperanza</span>
-          </a>
-          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-            <i class="ti ti-x fs-6"></i>
-          </div>
-        </div>
-        
-        <!-- Sidebar navigation-->
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-          
-          <ul id="sidebarnav">
-            <li class="nav-small-cap">
-              <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-              <span class="hide-menu">Inicio</span>
-            </li>
-            {% if user.is_authenticated %}
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{% url 'index' %}" aria-expanded="false">
-                <i class="ti ti-atom"></i>
-                <span class="hide-menu">Panel de Control</span>
-              </a>
-            </li>
-            <!-- ---------------------------------- -->
-            <!-- Dashboard -->
-            <!-- ---------------------------------- -->
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_meses_lec' %}" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-aperture"></i>
-                  </span>
-                  <span class="hide-menu">Lecturas</span>
-                </div>                
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_pag_usuarios' %}" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-shopping-cart"></i>
-                  </span>
-                  <span class="hide-menu">Pagos</span>
-                </div>                
-              </a>
-            </li>            
-            <li>
-              <span class="sidebar-divider lg"></span>
-            </li>
-            <li class="nav-small-cap">
-              <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-              <span class="hide-menu">Aplicaciones</span>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-basket"></i>
-                  </span>
-                  <span class="hide-menu">Usuarios</span>
-                </div>                
-              </a>
-              <ul aria-expanded="false" class="collapse first-level">
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'new_user' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Nuevo</span>
-                    </div>                    
-                  </a>
-                </li>                
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'list_users' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Listado</span>
-                    </div>                    
-                  </a>
-                </li>                
-              </ul>
-            </li>
-
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-chart-donut-3"></i>
-                  </span>
-                  <span class="hide-menu">Sectores</span>
-                </div>                
-              </a>
-              <ul aria-expanded="false" class="collapse first-level">
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'new_sector' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Nuevo</span>
-                    </div>                    
-                  </a>
-                </li>
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'list_sectors' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Listado</span>
-                    </div>                    
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_tipo_eventos' %}"
-                aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-user-circle"></i>
-                  </span>
-                  <span class="hide-menu">Tipos de Eventos</span>
-                </div>                
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_tarifas' %}" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-mail"></i>
-                  </span>
-                  <span class="hide-menu">Tarifas</span>
-                </div>                
-              </a>
-            </li>                        
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between"  
-                href="{% url 'list_medidores' %}" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-brand-google-photos"></i>
-                  </span>
-                  <span class="hide-menu">Medidores</span>
-                </div>                
-              </a>
-            </li>          
-            
-            <!-- REPORTES -->
-            
-            <li class="sidebar-item">
-              <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="d-flex">
-                    <i class="ti ti-chart-donut-3"></i>
-                  </span>
-                  <span class="hide-menu">Reportes</span>
-                </div>                
-              </a>
-              <ul aria-expanded="false" class="collapse first-level">
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'reporte_pagos' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Reporte Pagos</span>
-                    </div>                    
-                  </a>
-                </li>
-                <li class="sidebar-item">
-                  <a class="sidebar-link justify-content-between"  
-                    href="{% url 'reporte_lecturas' %}">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="round-16 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-circle"></i>
-                      </div>
-                      <span class="hide-menu">Reporte Lecturas</span>
-                    </div>                    
-                  </a>
-                </li>                
-              </ul>
-            </li>
-            <li class="sidebar-item">                
-                <a class="sidebar-link" href="#" data-bs-toggle="modal" data-bs-target="#modalInstalacionApk" aria-expanded="false" style="background-color: #28a745;">
-                    <i class="ti ti-atom"></i>
-                    <span class="hide-menu">Descargar 
-                    <br> Aplicación Móvil</span>
+        <div>
+            <div class="brand-logo d-flex align-items-center justify-content-between">
+                <a href="{% url 'index' %}" class="text-nowrap logo-img">            
+                    <span class="card-title">JAAP Buena Esperanza</span>
                 </a>
-            </li>
+                <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <i class="ti ti-x fs-6"></i>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                <ul id="sidebarnav">
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Inicio</span>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'index' %}" aria-expanded="false">
+                            <i class="ti ti-atom"></i>
+                            <span class="hide-menu">Inicio</span>
+                        </a>
+                    </li>
 
-            {% else %}
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="{% url 'login' %}" aria-expanded="false">
-                <i class="ti ti-login"></i>
-                <span class="hide-menu">Login</span>
-              </a>
-            </li>            
-            {% endif %}
+                    <!-- LECTURAS - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemalectura %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'list_meses_lec' %}" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-aperture"></i></span>
+                                <span class="hide-menu">Lecturas</span>
+                            </div>                
+                        </a>
+                    </li>
+                    {% endif %}
 
-          </ul>
-        </nav>
-        <!-- End Sidebar navigation -->
-      </div>
-      <!-- End Sidebar scroll-->
+                    <!-- PAGOS - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemapago %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'list_pag_usuarios' %}" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-shopping-cart"></i></span>
+                                <span class="hide-menu">Pagos</span>
+                            </div>                
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- SECCIÓN APLICACIONES -->
+                    {% if perms.sistema.view_sistemausuario or perms.sistema.view_sistemasector or perms.sistema.view_sistemaevento or perms.sistema.view_sistematarifa or perms.sistema.view_sistemamedidor %}
+                    <li><span class="sidebar-divider lg"></span></li>
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Aplicaciones</span>
+                    </li>
+                    {% endif %}
+
+                    <!-- USUARIOS - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemausuario %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-basket"></i></span>
+                                <span class="hide-menu">Usuarios</span>
+                            </div>                
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            {% if perms.sistema.add_sistemausuario %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'new_user' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Nuevo</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'list_users' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Listado</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <!-- SECTORES - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemasector %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-chart-donut-3"></i></span>
+                                <span class="hide-menu">Sectores</span>
+                            </div>                
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            {% if perms.sistema.add_sistemasector %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'new_sector' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Nuevo</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'list_sectors' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Listado</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <!-- EVENTOS - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemaevento %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'list_tipo_eventos' %}" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-user-circle"></i></span>
+                                <span class="hide-menu">Tipos de Eventos</span>
+                            </div>                
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- TARIFAS - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistematarifa %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'list_tarifas' %}" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-mail"></i></span>
+                                <span class="hide-menu">Tarifas</span>
+                            </div>                
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- MEDIDORES - Solo si tiene permiso -->
+                    {% if perms.sistema.view_sistemamedidor %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'list_medidores' %}" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-brand-google-photos"></i></span>
+                                <span class="hide-menu">Medidores</span>
+                            </div>                
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- REPORTES - Solo si tiene permiso de ver lecturas o pagos -->
+                    {% if perms.sistema.view_sistemalectura or perms.sistema.view_sistemapago %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-chart-donut-3"></i></span>
+                                <span class="hide-menu">Reportes</span>
+                            </div>                
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            {% if perms.sistema.view_sistemapago %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'reporte_pagos' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Reporte Pagos</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if perms.sistema.view_sistemalectura %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'reporte_lecturas' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Reporte Lecturas</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <!-- ADMINISTRACIÓN - Solo para staff/superuser -->
+                    {% if user.is_staff or user.is_superuser %}
+                    <li><span class="sidebar-divider lg"></span></li>
+                    <li class="nav-small-cap">
+                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                        <span class="hide-menu">Administración</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link justify-content-between has-arrow" href="javascript:void(0)" aria-expanded="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="d-flex"><i class="ti ti-shield"></i></span>
+                                <span class="hide-menu">Seguridad</span>
+                            </div>                
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'admin_grupos' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Grupos</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{% url 'admin_usuarios_sistema' %}">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-circle"></i>
+                                        </div>
+                                        <span class="hide-menu">Usuarios Sistema</span>
+                                    </div>                    
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <!-- DESCARGAR APP -->
+                    <li class="sidebar-item">                
+                        <a class="sidebar-link" href="#" data-bs-toggle="modal" data-bs-target="#modalInstalacionApk" aria-expanded="false" style="background-color: #28a745;">
+                            <i class="ti ti-atom"></i>
+                            <span class="hide-menu">Descargar <br> Aplicación Móvil</span>
+                        </a>
+                    </li>
+
+                    {% else %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'login' %}" aria-expanded="false">
+                            <i class="ti ti-login"></i>
+                            <span class="hide-menu">Login</span>
+                        </a>
+                    </li>            
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </aside>
     <!--  Sidebar End -->
     <!--  Main wrapper -->
@@ -331,71 +374,159 @@
           <!--  Row 1 -->
           <div class="row">
             {% block content %}
-            <!-- CARD 1: Consumo vs Recaudación -->
+
+            {% if user.is_staff %}
+            <!-- ==================== DASHBOARD ADMIN ==================== -->
+            <!-- KPIs PRINCIPALES -->
+            <div class="col-12">
+              <div class="row">
+                <!-- Total Usuarios -->
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <span class="btn btn-primary rounded-circle round-40 hstack justify-content-center">
+                          <i class="ti ti-users fs-5"></i>
+                        </span>
+                        <div class="ms-3">
+                          <h6 class="mb-0 text-muted">Usuarios</h6>
+                          <h4 class="mb-0 fw-bold">{{ usuarios_total }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Medidores Activos -->
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <span class="btn btn-info rounded-circle round-40 hstack justify-content-center">
+                          <i class="ti ti-gauge fs-5"></i>
+                        </span>
+                        <div class="ms-3">
+                          <h6 class="mb-0 text-muted">Medidores</h6>
+                          <h4 class="mb-0 fw-bold">{{ medidores_total }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Recaudación del Mes -->
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <div class="ms-3">
+                          <h6 class="mb-0 text-muted">Recaudado Mes</h6>
+                          <h4 class="mb-0 fw-bold">${{ recaudado_mes|floatformat:2 }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Pagos Pendientes -->
+                <div class="col-sm-6 col-lg-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <div class="ms-3">
+                          <h6 class="mb-0 text-muted">Pagos Pendientes</h6>
+                          <h4 class="mb-0 fw-bold">{{ pagos_pendientes }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GRÁFICO CONSUMO VS RECAUDACIÓN -->
             <div class="col-lg-8">
               <div class="card w-100">
                 <div class="card-body">
                   <div class="d-md-flex align-items-center">
                     <div>
-                      <h4 class="card-title">Consumo y recaudación mensual</h4>
+                      <h4 class="card-title">Consumo y Recaudación Mensual</h4>
                       <p class="card-subtitle">
-                        Consumo (m³) vs monto recaudado
+                        Consumo (m³) vs Monto Recaudado ($)
                       </p>
                     </div>
                     <div class="ms-auto">
-                      <ul class="list-unstyled mb-0">
-                        <li class="list-inline-item text-primary">
-                          <span class="round-8 text-bg-primary rounded-circle me-1 d-inline-block"></span>
-                          Consumo (m³)
+                      <ul class="list-unstyled mb-0 d-flex gap-3">
+                        <li class="d-flex align-items-center">
+                          <span class="round-8 bg-primary rounded-circle me-2 d-inline-block"></span>
+                          <span class="text-muted">Consumo (m³)</span>
                         </li>
-                        <li class="list-inline-item text-info">
-                          <span class="round-8 text-bg-info rounded-circle me-1 d-inline-block"></span>
-                          Recaudado ($)
+                        <li class="d-flex align-items-center">
+                          <span class="round-8 bg-success rounded-circle me-2 d-inline-block"></span>
+                          <span class="text-muted">Recaudado ($)</span>
                         </li>
                       </ul>
                     </div>
                   </div>
-                  <div id="sales-overview" class="mt-4 mx-n6"></div>
+                  <div id="sales-overview" class="mt-4"></div>
                 </div>
               </div>
             </div>
 
-            <!-- CARD 2: KPIs rápidos -->
+            <!-- RESUMEN LATERAL -->
             <div class="col-lg-4">
               <div class="card overflow-hidden">
                 <div class="card-body pb-0">
                   <div class="d-flex align-items-start">
                     <div>
-                      <h4 class="card-title">Resumen general</h4>
-                      <p class="card-subtitle">Usuarios y pagos</p>
+                      <h4 class="card-title">Resumen del Mes</h4>
+                      <p class="card-subtitle">{{ mes_actual|default:"Este mes" }}</p>
                     </div>
                   </div>
 
-                  <!-- Total usuarios -->
-                  <div class="mt-4 pb-3 d-flex align-items-center">
-                    <span class="btn btn-primary rounded-circle round-48 hstack justify-content-center">
-                      <i class="ti ti-users fs-6"></i>
+                  <div class="mt-4 pb-3 d-flex align-items-center border-bottom">
+                    <span class="btn btn-light-primary rounded-circle round-40 hstack justify-content-center me-3">
+                      <i class="ti ti-aperture fs-5"></i>
                     </span>
-                    <div class="ms-3">
-                      <h5 class="mb-0 fw-bolder fs-4">Usuarios registrados</h5>
-                      <span class="text-muted fs-3">{{ usuarios_total }}</span>
+                    <div>
+                      <h6 class="mb-0 text-muted">Lecturas registradas</h6>
+                      <h5 class="mb-0 fw-bold">{{ lecturas_mes }}</h5>
                     </div>
                   </div>
 
-                  <!-- Pagos pendientes -->                  
+                  <div class="py-3 d-flex align-items-center border-bottom">
+                    <span class="btn btn-light-info rounded-circle round-40 hstack justify-content-center me-3">
+                      <i class="ti ti-droplet fs-5"></i>
+                    </span>
+                    <div>
+                      <h6 class="mb-0 text-muted">Consumo total</h6>
+                      <h5 class="mb-0 fw-bold">{{ consumo_mes_total }} m³</h5>
+                    </div>
+                  </div>
 
-                  <!-- Top consumidor (si existe) -->
+                  <div class="py-3 d-flex align-items-center border-bottom">
+                    <span class="btn btn-light-success rounded-circle round-40 hstack justify-content-center me-3">
+                      <i class="ti ti-chart-pie fs-5"></i>
+                    </span>
+                    <div>
+                      <h6 class="mb-0 text-muted">Eficiencia recaudación</h6>
+                      <h5 class="mb-0 fw-bold">{{ eficiencia_recaudacion }}%</h5>
+                    </div>
+                  </div>
+
                   {% if top_consumidores %}
                   {% with tc=top_consumidores.0 %}
                   <div class="py-3 d-flex align-items-center">
-                    <span class="btn btn-success rounded-circle round-48 hstack justify-content-center">
-                      <i class="ti ti-flame fs-6"></i>
+                    <span class="btn btn-light-warning rounded-circle round-40 hstack justify-content-center me-3">
+                      <i class="ti ti-trophy fs-5"></i>
                     </span>
-                    <div class="ms-3">
-                      <h5 class="mb-0 fw-bolder fs-4">Mayor consumo</h5>
-                      <span class="text-muted fs-3">
-                        {{ tc.usuario__apellido_paterno }} {{ tc.usuario__nombres }} ({{ tc.total }} m³)
+                    <div>
+                      <h6 class="mb-0 text-muted">Mayor consumo</h6>
+                      <span class="text-dark fw-medium">
+                        {{ tc.usuario__apellido_paterno }} {{ tc.usuario__nombres }}
                       </span>
+                      <br>
+                      <span class="text-muted small">{{ tc.total }} m³</span>
                     </div>
                   </div>
                   {% endwith %}
@@ -404,25 +535,27 @@
               </div>
             </div>
 
-            <!-- CARD 3: Tabla por sector -->
-            <div class="col-12">
+            <!-- TABLA POR SECTOR -->
+            <div class="col-lg-8">
               <div class="card">
                 <div class="card-body">
                   <div class="d-md-flex align-items-center">
                     <div>
-                      <h4 class="card-title">Consumo y recaudación por sector</h4>
+                      <h4 class="card-title">Consumo y Recaudación por Sector</h4>
                       <p class="card-subtitle">
                         Sectores ordenados por consumo y monto recaudado
                       </p>
                     </div>
                   </div>
                   <div class="table-responsive mt-4">
-                    <table class="table mb-0 text-nowrap varient-table align-middle fs-3">
+                    <table class="table mb-0 text-nowrap align-middle fs-3">
                       <thead>
                         <tr>
                           <th class="px-0 text-muted">Sector</th>
-                          <th class="px-0 text-muted text-end">Consumo total (m³)</th>
+                          <th class="px-0 text-muted text-center">Usuarios</th>
+                          <th class="px-0 text-muted text-end">Consumo (m³)</th>
                           <th class="px-0 text-muted text-end">Recaudado ($)</th>
+                          <th class="px-0 text-muted text-center">Pendientes</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -432,8 +565,16 @@
                             <div class="d-flex align-items-center">
                               <div class="ms-3">
                                 <h6 class="mb-0 fw-bolder">{{ sectore.nombre }}</h6>
+                                <span class="text-muted small">{{ sectore.descripcion|truncatechars:30 }}</span>
                               </div>
                             </div>
+                          </td>
+                          <td class="px-0 text-center">
+                            {% for usuario in usuarios_por_sector %}
+                              {% if sectore.id == usuario.sector_id %}
+                                <span class="badge bg-light text-dark">{{ usuario.total }}</span>
+                              {% endif %}
+                            {% endfor %}
                           </td>
                           <td class="px-0 text-dark fw-medium text-end">
                             {% for consumo in consumo_sector %}
@@ -445,14 +586,25 @@
                           <td class="px-0 text-dark fw-medium text-end">
                             {% for recaudos_sec in recaudos_sector %}
                               {% if sectore.nombre == recaudos_sec.usuario__sector__nombre %}
-                                {{ recaudos_sec.total }}
+                                ${{ recaudos_sec.total|floatformat:2 }}
+                              {% endif %}
+                            {% endfor %}
+                          </td>
+                          <td class="px-0 text-center">
+                            {% for pend in pendientes_por_sector %}
+                              {% if sectore.id == pend.sector_id %}
+                                {% if pend.total > 0 %}
+                                  <span class="badge bg-warning text-dark">{{ pend.total }}</span>
+                                {% else %}
+                                  <span class="badge bg-success">0</span>
+                                {% endif %}
                               {% endif %}
                             {% endfor %}
                           </td>
                         </tr>                       
                         {% empty %}
                         <tr>
-                          <td colspan="3" class="text-center text-muted">Sin datos de sectores.</td>
+                          <td colspan="5" class="text-center text-muted">Sin datos de sectores.</td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -461,10 +613,298 @@
                 </div>
               </div>
             </div>
+
+            <!-- EVENTOS PRÓXIMOS -->
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div>
+                      <h4 class="card-title">Próximos Eventos</h4>
+                      <p class="card-subtitle">Actividades programadas</p>
+                    </div>
+                  </div>
+                  
+                  {% if eventos %}
+                  <div class="mt-4">
+                    {% for evento in eventos|slice:":3" %}
+                    <div class="d-flex align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                      <span class="btn btn-light-primary rounded-circle round-40 hstack justify-content-center">
+                        <i class="ti ti-calendar fs-5"></i>
+                      </span>
+                      <div class="ms-3">
+                        <h6 class="mb-0 fw-bold">{{ evento.nombre }}</h6>
+                        <span class="text-muted small">
+                          {{ evento.fecha|date:"d/m/Y" }} - {{ evento.lugar|truncatechars:20 }}
+                        </span>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <div class="text-center py-4 text-muted">
+                    <i class="ti ti-calendar-off fs-1"></i>
+                    <p class="mt-2">No hay eventos programados</p>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
             <script>
               window.dashboardData = {{ chart_data_json|safe }};
             </script>
-            <script src="{% static 'assets/js/dashboard.js' %}"></script>  
+            <script src="{% static 'assets/js/dashboard.js' %}"></script>
+
+            {% else %}
+
+            <!-- ==================== DASHBOARD USUARIO NORMAL ==================== -->
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="text-center py-4">
+                    <h3 class="fw-bold text-dark mb-2">HOLA, {{ user.first_name|default:user.username }}</h3>
+                    <p class="text-muted">Sistema de Gestión de Agua Potable - JAAP Buena Esperanza</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCESOS RÁPIDOS -->
+            <div class="col-12">
+              <h5 class="card-title mb-3">Accesos Rápidos</h5>
+              <div class="row">
+                
+                <!-- Lecturas -->
+                {% if perms.sistema.view_sistemalectura %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_meses_lec' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0 bg-light-primary">
+                      <div class="card-body text-center py-4">
+                        <span class="btn btn-primary rounded-circle round-60 hstack justify-content-center mx-auto mb-3">
+                          <i class="ti ti-aperture fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Lecturas</h5>
+                        <p class="mb-0 text-muted small">Registrar y consultar</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Pagos -->
+                {% if perms.sistema.view_sistemapago %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_pag_usuarios' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0 bg-light-success">
+                      <div class="card-body text-center py-4">
+                        <span class="btn btn-success rounded-circle round-60 hstack justify-content-center mx-auto mb-3">
+                          <i class="ti ti-cash fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Pagos</h5>
+                        <p class="mb-0 text-muted small">Gestionar pagos</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Usuarios -->
+                {% if perms.sistema.view_sistemausuario %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_users' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0 bg-light-info">
+                      <div class="card-body text-center py-4">
+                        <span class="btn btn-info rounded-circle round-60 hstack justify-content-center mx-auto mb-3">
+                          <i class="ti ti-users fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Usuarios</h5>
+                        <p class="mb-0 text-muted small">Lista de usuarios</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Medidores -->
+                {% if perms.sistema.view_sistemamedidor %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_medidores' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0 bg-light-warning">
+                      <div class="card-body text-center py-4">
+                        <span class="btn btn-warning rounded-circle round-60 hstack justify-content-center mx-auto mb-3">
+                          <i class="ti ti-gauge fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Medidores</h5>
+                        <p class="mb-0 text-muted small">Ver medidores</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Sectores -->
+                {% if perms.sistema.view_sistemasector %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_sectors' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0" style="background-color: #f3e5f5;">
+                      <div class="card-body text-center py-4">
+                        <span class="btn rounded-circle round-60 hstack justify-content-center mx-auto mb-3" style="background-color: #9c27b0; color: white;">
+                          <i class="ti ti-map fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Sectores</h5>
+                        <p class="mb-0 text-muted small">Gestionar sectores</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Reportes -->
+                {% if perms.sistema.view_sistemalectura or perms.sistema.view_sistemapago %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'reporte_pagos' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0" style="background-color: #e8f5e9;">
+                      <div class="card-body text-center py-4">
+                        <span class="btn rounded-circle round-60 hstack justify-content-center mx-auto mb-3" style="background-color: #4caf50; color: white;">
+                          <i class="ti ti-chart-bar fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Reportes</h5>
+                        <p class="mb-0 text-muted small">Ver reportes</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+                <!-- Tarifas -->
+                {% if perms.sistema.view_sistematarifa %}
+                <div class="col-sm-6 col-lg-3 mb-3">
+                  <a href="{% url 'list_tarifas' %}" class="text-decoration-none">
+                    <div class="card hover-card border-0" style="background-color: #fff3e0;">
+                      <div class="card-body text-center py-4">
+                        <span class="btn rounded-circle round-60 hstack justify-content-center mx-auto mb-3" style="background-color: #ff9800; color: white;">
+                          <i class="ti ti-currency-dollar fs-3"></i>
+                        </span>
+                        <h5 class="mb-1 fw-bold text-dark">Tarifas</h5>
+                        <p class="mb-0 text-muted small">Ver tarifas</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                {% endif %}
+                
+              </div>
+            </div>
+
+            <!-- ESTADÍSTICAS RÁPIDAS -->
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Resumen General</h4>
+                  <p class="card-subtitle">Información del sistema</p>
+                  
+                  <div class="mt-4">
+                    <div class="d-flex align-items-center py-3 border-bottom">
+                      <span class="btn btn-light-primary rounded-circle round-40 hstack justify-content-center me-3">
+                        <i class="ti ti-users fs-5"></i>
+                      </span>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0 text-muted">Total Usuarios</h6>
+                      </div>
+                      <h5 class="mb-0 fw-bold">{{ usuarios_total }}</h5>
+                    </div>
+                    
+                    <div class="d-flex align-items-center py-3 border-bottom">
+                      <span class="btn btn-light-info rounded-circle round-40 hstack justify-content-center me-3">
+                        <i class="ti ti-gauge fs-5"></i>
+                      </span>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0 text-muted">Total Medidores</h6>
+                      </div>
+                      <h5 class="mb-0 fw-bold">{{ medidores_total }}</h5>
+                    </div>
+                    
+                    <div class="d-flex align-items-center py-3 border-bottom">
+                      <span class="btn btn-light-warning rounded-circle round-40 hstack justify-content-center me-3">
+                        <i class="ti ti-clock fs-5"></i>
+                      </span>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0 text-muted">Pagos Pendientes</h6>
+                      </div>
+                      <h5 class="mb-0 fw-bold">{{ pagos_pendientes }}</h5>
+                    </div>
+                    
+                    <div class="d-flex align-items-center py-3">
+                      <span class="btn btn-light-success rounded-circle round-40 hstack justify-content-center me-3">
+                        <i class="ti ti-aperture fs-5"></i>
+                      </span>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0 text-muted">Lecturas este mes</h6>
+                      </div>
+                      <h5 class="mb-0 fw-bold">{{ lecturas_mes }}</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRÓXIMOS EVENTOS -->
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Próximos Eventos</h4>
+                  <p class="card-subtitle">Actividades programadas</p>
+                  
+                  {% if eventos %}
+                  <div class="mt-4">
+                    {% for evento in eventos|slice:":4" %}
+                    <div class="d-flex align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                      <span class="btn btn-light-primary rounded-circle round-40 hstack justify-content-center">
+                        <i class="ti ti-calendar fs-5"></i>
+                      </span>
+                      <div class="ms-3">
+                        <h6 class="mb-0 fw-bold">{{ evento.nombre }}</h6>
+                        <span class="text-muted small">
+                          {{ evento.fecha|date:"d/m/Y" }} - {{ evento.lugar|truncatechars:25 }}
+                        </span>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <div class="text-center py-4 text-muted">
+                    <i class="ti ti-calendar-off fs-1"></i>
+                    <p class="mt-2">No hay eventos programados</p>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <style>
+            .hover-card {
+              transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .hover-card:hover {
+              transform: translateY(-5px);
+              box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            .round-60 {
+              width: 60px !important;
+              height: 60px !important;
+            }
+            .bg-light-primary { background-color: rgba(102, 16, 242, 0.05); }
+            .bg-light-success { background-color: rgba(40, 167, 69, 0.05); }
+            .bg-light-info { background-color: rgba(23, 162, 184, 0.05); }
+            .bg-light-warning { background-color: rgba(255, 193, 7, 0.1); }
+            .btn-light-primary { background-color: rgba(102, 16, 242, 0.1); }
+            .btn-light-success { background-color: rgba(40, 167, 69, 0.1); }
+            .btn-light-info { background-color: rgba(23, 162, 184, 0.1); }
+            .btn-light-warning { background-color: rgba(255, 193, 7, 0.15); }
+            </style>
+
+            {% endif %}
             {% endblock %}
           </div>
           <div class="py-6 px-6 text-center">
@@ -507,7 +947,6 @@
                   </ol>
               </div>
               <div class="modal-footer">
-                  <!-- Aquí va el enlace real de descarga -->
                   <a href="{% url 'descargar_apk' %}" class="btn btn-success btn-lg w-100">
                       <i class="ti ti-download me-2"></i>Descargar APK
                   </a>
@@ -520,9 +959,6 @@
   <script src="{% static 'assets/js/app.min.js' %}"></script>
   <script src="{% static 'assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
   <script src="{% static 'assets/libs/simplebar/dist/simplebar.js' %}"></script>
-  
-
-
 </body>
 
 </html>

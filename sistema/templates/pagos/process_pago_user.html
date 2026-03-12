@@ -84,9 +84,11 @@
   </tbody>
 </table>
 <div class="mb-3 no-print">
+  {% if perms.change_sistemapago %}
   <button type="button" class="btn btn-secondary" onclick="window.print()">
     Imprimir recibo
   </button>
+  {% endif %}
 </div>
 
 <!-- CONTENEDOR SOLO PARA IMPRESIÓN (MEDIA A4) -->
@@ -104,7 +106,7 @@
       <p><strong>Usuario:</strong> {{ usuario.nombres }} {{ usuario.apellido_paterno }}</p>
       <p><strong>Sector:</strong> {{ sector.nombre }}</p>
       <p><strong>Fecha emisión:</strong> {% now "d/m/Y" %}</p>
-      <p><strong>Cédula/DNI:</strong> {{ usuario.dni_cedula }}</p>
+      <p><strong>Cédula:</strong> {{ usuario.dni_cedula }}</p>
       <p><strong>Medidor:</strong>
       {% if lectura_recibo and lectura_recibo.medidor %}
         {{ lectura_recibo.medidor.numero_serie }}

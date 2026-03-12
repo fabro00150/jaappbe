@@ -8,45 +8,105 @@
                 <div class="card-body">
                   <form action="{% url 'save_user' usuario.id %}" method="post">
                     {% csrf_token %}
+                    
+                    <!-- DNI readonly (no disabled) -->
                     <div class="mb-3">
-                      <label class="form-label">DNI</label>
-                      <input type="number" class="form-control" id="dni_cedula" value="{{ usuario.dni_cedula }}" name="dni_cedula" disabled>
+                      <label class="form-label">Cédula</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="dni_cedula" 
+                        value="{{ usuario.dni_cedula }}" 
+                        name="dni_cedula" 
+                        readonly
+                        style="background-color: #e9ecef;"
+                      >
+                      <small class="text-muted">La cédula no puede ser modificado</small>
                     </div>
+                    
                     <div class="mb-3">
                       <label class="form-label">Nombres</label>
-                      <input type="text" class="form-control" id="nombres" value="{{ usuario.nombres }}" name="nombres">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="nombres" 
+                        value="{{ usuario.nombres }}" 
+                        name="nombres"
+                        minlength="10"
+                        maxlength="50"
+                        onblur="convertirMayusculas(this)"
+                        required
+                      >
                     </div>
+                    
                     <div class="mb-3">
                       <label class="form-label">Apellido Paterno</label>
-                      <input type="text" class="form-control" id="apellido_paterno" value="{{ usuario.apellido_paterno }}" name="apellido_paterno">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="apellido_paterno" 
+                        value="{{ usuario.apellido_paterno }}" 
+                        name="apellido_paterno"
+                        maxlength="50"
+                        minlength="10"
+                        onblur="convertirMayusculas(this)"
+                        required
+                      >
                     </div>
+                    
                     <div class="mb-3">
                       <label class="form-label">Apellido Materno</label>
-                      <input type="text" class="form-control" id="apellido_materno" value="{{ usuario.apellido_materno }}" name="apellido_materno">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="apellido_materno" 
+                        value="{{ usuario.apellido_materno }}" 
+                        name="apellido_materno"
+                        onblur="convertirMayusculas(this)"
+                        minlength="10"
+                        maxlength="50"
+                        required
+                      >
                     </div>
+                    
                     <div class="mb-3">
-                      <label class="form-label">Telefono</label>
-                      <input type="text" class="form-control" id="telefono" value="{{ usuario.telefono }}" name="telefono" maxlength="10">
+                      <label class="form-label">Teléfono</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="telefono" 
+                        value="{{ usuario.telefono }}" 
+                        name="telefono" 
+                        maxlength="10"
+                        oninput="this.value = this.value.replace(/\D/g, '')"
+                      >
                     </div>
+                    
                     <div class="mb-3">
                       <label class="form-label">Sector</label>
-                      <select class="form-select" name="sector" value="{{ usuario.sector.id }}" id="sector" >
-                        <option selected value="{{ usuario.sector.id }}">{{ usuario.sector.nombre }}</option>
+                      <select class="form-select" name="sector" id="sector">
+                        <option value="{{ usuario.sector.id }}" selected>{{ usuario.sector.nombre }}</option>
                         {% for sector in sectores %}
-                        <option value="{{ sector.id }}">{{ sector.nombre }}</option>
+                          {% if sector.id != usuario.sector.id %}
+                            <option value="{{ sector.id }}">{{ sector.nombre }}</option>
+                          {% endif %}
                         {% endfor %}
                       </select>
                     </div>
+                    
                     <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{% url 'list_users' %}" class="btn btn-secondary">Cancelar</a>
                   </form>
                 </div>
-              </div>
             </div>
         </div>
     </div>
 </div>
 
-
-
-
+<script>
+  // Convertir a mayúsculas
+  function convertirMayusculas(input) {
+    input.value = input.value.toUpperCase();
+  }
+</script>
 {% endblock %}

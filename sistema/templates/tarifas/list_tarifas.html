@@ -4,7 +4,9 @@
 <table id="table_tarifas" class="display table table-striped table-bordered">
     <thead>
         <tr>
+            {% if user.is_staff %}
             <th>ID</th>
+            {% endif %}
             <th>Tarifa</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -13,7 +15,9 @@
     <tbody>
         {% for tarifa in tarifas %}
         <tr>
+            {% if user.is_staff %}
             <td>{{ tarifa.id }}</td>
+            {% endif %}
             <td>{{ tarifa.tarifa }}</td>
             <td>                
                 {% if tarifa.activa %}
@@ -23,16 +27,20 @@
                 {% endif %}
             </td>
             <td>
+                {% if perms.sistema.change_sismtarifa %}
                 <a href="{% url 'edit_tarifa' tarifa.id %}"><i class="ti ti-edit"></i></a>
+                {% endif %}
+                {% if perms.sistema.delete_sismtarifa %}
                 <a href="{% url 'delete_tarifa' tarifa.id %}"><i class="ti ti-trash"></i></a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
+{% if perms.sistema.add_sismtarifa %}
 <a href="{% url 'new_tarifa' %}" class="btn btn-primary">Crear tarifa</a>
-
+{% endif %}
 <script>
     $(document).ready(function() {
         $('#table_tarifas').DataTable({

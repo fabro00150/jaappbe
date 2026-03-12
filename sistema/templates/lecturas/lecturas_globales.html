@@ -35,7 +35,7 @@
     <thead>
       <tr>
         <th>Sector</th>
-        <th>DNI/Cedula</th>
+        <th>Cédula</th>
         <th>Usuario</th>
         <th>Medidor</th>
         <th>Lectura anterior</th>
@@ -64,7 +64,7 @@
                 value="{{ item.lectura_anterior }}"
                 disabled>
         </td>
-        <td>
+        <td style="width: 150px;">
           {% if item.pagado %}
             <input type="number" class="form-control"
                   value="{{ item.lectura_actual }}"
@@ -76,6 +76,10 @@
                   value="{{ item.lectura_actual }}"
                   class="form-control lectura-actual"
                   max="99999"
+                  {% if perms.sistema.edit_sistemalecturas %}
+                  {% else %}
+                  disabled
+                  {% endif %}
                   data-anterior="{{ item.lectura_anterior }}">
           {% endif %}
         </td>
@@ -104,7 +108,9 @@
     </tbody>
 
   </table>
+  {% if perms.sistema.edit_sistemalecturas %}
   <button type="submit" class="btn btn-success">Guardar lecturas</button>
+  {% endif %}
 </form>
 
 <script>

@@ -5,7 +5,7 @@
     {% csrf_token %}
     <div class="mb-3">
         <label class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="nombre" value="{{ sector.nombre }}" name="nombre">
+        <input type="text" minlength="7" maxlength="100" class="form-control" id="nombre" value="{{ sector.nombre }}" name="nombre">
     </div>
     <div class="mb-3">
         <label class="form-label">Descripción</label>

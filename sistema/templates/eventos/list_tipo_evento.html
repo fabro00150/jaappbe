@@ -1,42 +1,73 @@
 {% extends 'index.html' %}
 {% block content %}
-<h1>Lista de Tipos de Eventos</h1>
-<table id="table_tipo_eventos" class="display table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Fecha</th>
-            <th>Lugar</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-            <th>Registrar</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for tipo_evento in tipo_eventos %}
-        <tr>
-            <td>{{ tipo_evento.id }}</td>
-            <td>{{ tipo_evento.nombre }}</td>
-            <td>{{ tipo_evento.fecha }}</td>
-            <td>{{ tipo_evento.lugar }}</td>
-            <td>{{ tipo_evento.descripcion }}</td>
-            <td>
-                <a href="{% url 'edit_tipo_evento' tipo_evento.id %}"><i class="ti ti-edit"></i></a>
-                <a href="{% url 'delete_tipo_evento' tipo_evento.id %}"><i class="ti ti-trash"></i></a>
-            </td>
-            <td>
-                <!-- 👇 botón para registrar asistencias al evento -->
-                <a href="{% url 'asistencia_evento' tipo_evento.id %}" class="btn btn-success btn-sm">
-                    Registrar asistencias
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
-<a href="{% url 'new_tipo_evento' %}" class="btn btn-primary">Crear evento</a>
+<h1>Lista de Tipos de Eventos</h1>
+
+<div class="table-responsive">
+    <table id="table_tipo_eventos" class="display table table-striped table-bordered">
+        <thead>
+            <tr>
+                {% if user.is_staff %}
+                <th>ID</th>
+                {% endif %}
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Lugar</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+                <th>Registrar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tipo_evento in tipo_eventos %}
+            <tr>
+                {% if user.is_staff %}
+                <td>{{ tipo_evento.id }}</td>
+                {% endif %}
+                <td>{{ tipo_evento.nombre }}</td>
+                <td>{{ tipo_evento.fecha }}</td>
+                <td>{{ tipo_evento.lugar }}</td>
+                <td>{{ tipo_evento.descripcion }}</td>
+                <td>
+                    {% if perms.sistema.change_sistemaevento %}
+                    <a href="{% url 'edit_tipo_evento' tipo_evento.id %}" 
+                       class="btn btn-warning btn-sm" title="Editar">
+                        <i class="ti ti-edit"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% if perms.sistema.delete_sistemaevento %}
+                    <a href="{% url 'delete_tipo_evento' tipo_evento.id %}" 
+                       class="btn btn-danger btn-sm" 
+                       title="Eliminar"
+                       onclick="return confirm('¿Eliminar este evento?')">
+                        <i class="ti ti-trash"></i>
+                    </a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if perms.sistema.edit_sistemaasistencia %}
+                    <a href="{% url 'asistencia_evento' tipo_evento.id %}" 
+                       class="btn btn-success btn-sm">
+                        Registrar asistencias
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">No hay eventos registrados</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if perms.sistema.add_sistemaevento %}
+<a href="{% url 'new_tipo_evento' %}" class="btn btn-primary">
+    <i class="ti ti-plus"></i> Crear evento
+</a>
+{% endif %}
 
 <script>
     $(document).ready(function() {
@@ -63,4 +94,5 @@
         });
     </script>
 {% endif %}
+
 {% endblock %}

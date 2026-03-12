@@ -33,15 +33,18 @@
         <td>{{ asistencia.usuario.sector.nombre }}</td>
         <td>{{ asistencia.fecha_hora|date:"d/m/Y H:i" }}</td>
         <td>
+          {% if perms.sistema.edit_sistemaasistencia %}
           <input type="checkbox" name="asistio_{{ asistencia.id }}"
                  {% if asistencia.asistio %}checked{% endif %}>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-
+  {% if perms.sistema.edit_sistemaasistencia %}
   <button type="submit" class="btn btn-primary">Guardar asistencias</button>
+  {% endif %}
 </form>
 <script>
   let tabla;
