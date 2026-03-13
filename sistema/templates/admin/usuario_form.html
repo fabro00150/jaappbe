@@ -19,36 +19,46 @@
                             <label class="form-label">Usuario *</label>
                             <input type="text" name="username" class="form-control" 
                                    value="{{ usuario.username|default:'' }}" 
+                                   minlength="10"
+                                   maxlength="25"
                                    {% if accion == 'Editar' %}readonly{% endif %} required>
                         </div>
                         
                         {% if accion == 'Crear' %}
                         <div class="mb-3">
                             <label class="form-label">Contraseña *</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password" name="password" class="form-control" minlength="8" maxlength="20" required>
                         </div>
                         {% else %}
                         <div class="mb-3">
                             <label class="form-label">Nueva Contraseña (dejar vacío para mantener)</label>
-                            <input type="password" name="new_password" class="form-control">
+                            <input type="password" name="new_password" class="form-control" minlength="8" maxlength="20">
                         </div>
                         {% endif %}
                         
                         <div class="mb-3">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" 
+                            maxlength="254"
+                            
                                    value="{{ usuario.email|default:'' }}">
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Nombre</label>
+                            <label class="form-label">Nombre *</label>
                             <input type="text" name="first_name" class="form-control" 
+                                    maxlength="30"
+                                    minlength="3"
+                                    required
                                    value="{{ usuario.first_name|default:'' }}">
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Apellido</label>
+                            <label class="form-label">Apellido *</label>
                             <input type="text" name="last_name" class="form-control" 
+                                    maxlength="30"
+                                    minlength="3"
+                                    required                                    
                                    value="{{ usuario.last_name|default:'' }}">
                         </div>
                         

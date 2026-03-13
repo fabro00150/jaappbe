@@ -7,7 +7,7 @@
 <table id="table_users" class="display table table-striped table-bordered">
     <thead style="color: #1E1E1E;">
         <tr>
-            <th>DNI/Cedula</th>
+            <th>Cédula</th>
             <th>Nombres</th>
             <th>Apellido Paterno</th>
             <th>Apellido Materno</th>
@@ -26,8 +26,11 @@
             <td>{{ usuario.telefono }}</td>
             <td>{{ usuario.sector.nombre }}</td>
             <td>
+                
                 <a class="btn btn-primary" href="{% url 'edit_user' usuario.id %}">Editar</a>
+                
                 <a class="btn btn-danger" href="{% url 'delete_user' usuario.id %}" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</a>
+                
             </td>
         </tr>
         {% endfor %}

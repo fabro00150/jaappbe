@@ -24,9 +24,9 @@
               </label>
             </div>
 
-            <!-- DNI / Cédula -->
+            <!-- Cédula -->
             <div class="mb-3">
-              <label class="form-label">Cédula / DNI *</label>
+              <label class="form-label">Cédula *</label>
               <input
                 type="text"
                 class="form-control"
@@ -45,6 +45,8 @@
                 class="form-control" 
                 id="nombres" 
                 name="nombres" 
+                minlength="10"
+                maxlength="50"
                 required
                 onblur="convertirMayusculas(this)"
               >
@@ -58,6 +60,8 @@
                 class="form-control" 
                 id="apellido_paterno" 
                 name="apellido_paterno" 
+                minlength="10"
+                maxlength="50"
                 required
                 onblur="convertirMayusculas(this)"
               >
@@ -70,6 +74,8 @@
                 class="form-control" 
                 id="apellido_materno" 
                 name="apellido_materno" 
+                minlength="10"
+                maxlength="50"
                 required
                 onblur="convertirMayusculas(this)"
               >

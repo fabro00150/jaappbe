@@ -4,7 +4,9 @@
 <table id="table_sectors" class="display table table-striped table-bordered">
     <thead>
         <tr>
+            {% if user.is_staff %}
             <th>ID</th>
+            {% endif %}
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Estado</th>
@@ -14,15 +16,21 @@
     <tbody>
         {% for sector in sectores %}
         <tr>
+            {% if user.is_staff %}
             <td>{{ sector.id }}</td>
+            {% endif %}
             <td>{{ sector.nombre }}</td>
             <td>{{ sector.descripcion }}</td>
             <td>{{ sector.estado }}</td>
             <td>
+                {% if perms.sistema.change_sismsector %}
                 <a href="{% url 'edit_sector' sector.id %}"><i class="ti ti-edit"></i></a>
+                {% endif %}
             </td>
             <td>
+                {% if perms.sistema.delete_sismsector %}
                 <a href="{% url 'delete_sector' sector.id %}"><i class="ti ti-trash"></i></a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

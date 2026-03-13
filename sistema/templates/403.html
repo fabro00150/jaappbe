@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>500 - Error del Servidor | JAAP</title>
+    <title>403 - Acceso denegado | JAAP</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/favicon.png' %}" />
     <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />
     <style>
@@ -75,11 +75,11 @@
 <body>
     <div class="error-container">
         
-        <div class="error-code">500</div>
-        <h1 class="error-title">Error del Servidor</h1>
+        <div class="error-code">403</div>
+        <h1 class="error-title">Acceso denegado</h1>
         <p class="error-message">
-            Ha ocurrido un error interno en el servidor.<br>
-            Por favor, intenta más tarde.
+            No tienes permisos para acceder a esta página.<br>
+            Por favor, contacta con el administrador si crees que esto es un error.
         </p>
         <div>
             <a href="javascript:history.back()" class="btn-back">Volver</a>

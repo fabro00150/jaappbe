@@ -11,7 +11,7 @@
                     
                     <!-- DNI readonly (no disabled) -->
                     <div class="mb-3">
-                      <label class="form-label">DNI</label>
+                      <label class="form-label">Cédula</label>
                       <input 
                         type="text" 
                         class="form-control" 
@@ -21,7 +21,7 @@
                         readonly
                         style="background-color: #e9ecef;"
                       >
-                      <small class="text-muted">El DNI no puede ser modificado</small>
+                      <small class="text-muted">La cédula no puede ser modificado</small>
                     </div>
                     
                     <div class="mb-3">
@@ -32,6 +32,8 @@
                         id="nombres" 
                         value="{{ usuario.nombres }}" 
                         name="nombres"
+                        minlength="10"
+                        maxlength="50"
                         onblur="convertirMayusculas(this)"
                         required
                       >
@@ -45,6 +47,8 @@
                         id="apellido_paterno" 
                         value="{{ usuario.apellido_paterno }}" 
                         name="apellido_paterno"
+                        maxlength="50"
+                        minlength="10"
                         onblur="convertirMayusculas(this)"
                         required
                       >
@@ -59,6 +63,8 @@
                         value="{{ usuario.apellido_materno }}" 
                         name="apellido_materno"
                         onblur="convertirMayusculas(this)"
+                        minlength="10"
+                        maxlength="50"
                         required
                       >
                     </div>
